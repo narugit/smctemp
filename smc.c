@@ -440,40 +440,6 @@ kern_return_t SMCReadKey(UInt32Char_t key, SMCVal_t *val)
     return SMCReadKey2(key, val, g_conn);
 }
 
-kern_return_t SMCWriteKey2(SMCVal_t writeVal, io_connect_t conn)
-{
-    kern_return_t result;
-    SMCKeyData_t  inputStructure;
-    SMCKeyData_t  outputStructure;
-    
-    SMCVal_t      readVal;
-    
-    result = SMCReadKey2(writeVal.key, &readVal,conn);
-    if (result != kIOReturnSuccess)
-        return result;
-    
-    if (readVal.dataSize != writeVal.dataSize)
-        return kIOReturnError;
-    
-    memset(&inputStructure, 0, sizeof(SMCKeyData_t));
-    memset(&outputStructure, 0, sizeof(SMCKeyData_t));
-    
-    inputStructure.key = _strtoul(writeVal.key, 4, 16);
-    inputStructure.data8 = SMC_CMD_WRITE_BYTES;
-    inputStructure.keyInfo.dataSize = writeVal.dataSize;
-    memcpy(inputStructure.bytes, writeVal.bytes, sizeof(writeVal.bytes));
-    result = SMCCall2(KERNEL_INDEX_SMC, &inputStructure, &outputStructure,conn);
-    
-    if (result != kIOReturnSuccess)
-        return result;
-    return kIOReturnSuccess;
-}
-
-kern_return_t SMCWriteKey(SMCVal_t writeVal)
-{
-    return SMCWriteKey2(writeVal, g_conn);
-}
-
 UInt32 SMCReadIndexCount(void)
 {
     SMCVal_t val;
@@ -613,30 +579,8 @@ void usage(char* prog)
     printf("    -t         : list CPU temperatures\n");
     printf("    -h         : help\n");
     printf("    -l         : list all keys and values\n");
-    printf("    -w <value> : write the specified value to a key\n");
     printf("    -v         : version\n");
     printf("\n");
-}
-
-kern_return_t SMCWriteSimple(UInt32Char_t key, char *wvalue, io_connect_t conn)
-{
-    kern_return_t result;
-    SMCVal_t   val;
-    int i;
-    char c[3];
-    for (i = 0; i < strlen(wvalue); i++)
-    {
-        sprintf(c, "%c%c", wvalue[i * 2], wvalue[(i * 2) + 1]);
-        val.bytes[i] = (int) strtol(c, NULL, 16);
-    }
-    val.dataSize = i / 2;
-    sprintf(val.key, key);
-    result = SMCWriteKey2(val, conn);
-    if (result != kIOReturnSuccess)
-        printf("Error: SMCWriteKey() = %08x\n", result);
-	
-    
-    return result;
 }
 
 int main(int argc, char *argv[])
@@ -662,24 +606,6 @@ int main(int argc, char *argv[])
             case 'v':
                 printf("%s\n", VERSION);
                 return 0;
-                break;
-            case 'w':
-                op = OP_WRITE;
-            {
-                int i;
-                char c[3];
-                for (i = 0; i < strlen(optarg); i++)
-                {
-                    sprintf(c, "%c%c", optarg[i * 2], optarg[(i * 2) + 1]);
-                    val.bytes[i] = (int) strtol(c, NULL, 16);
-                }
-                val.dataSize = i / 2;
-                if ((val.dataSize * 2) != strlen(optarg))
-                {
-                    printf("Error: value is not valid\n");
-                    return 1;
-                }
-            }
                 break;
             case 'h':
             case '?':
@@ -707,19 +633,6 @@ int main(int argc, char *argv[])
             result = SMCPrintTemps();
             if (result != kIOReturnSuccess)
                 printf("Error: SMCPrintTemps() = %08x\n", result);
-            break;
-        case OP_WRITE:
-            if (strlen(key) > 0)
-            {
-                sprintf(val.key, key);
-                result = SMCWriteKey(val);
-                if (result != kIOReturnSuccess)
-                    printf("Error: SMCWriteKey() = %08x\n", result);
-            }
-            else
-            {
-                printf("Error: specify a key to write\n");
-            }
             break;
     }
     
