@@ -27,8 +27,7 @@
 
 #define OP_NONE               0
 #define OP_LIST               1 
-#define OP_READ               2
-#define OP_READ_TEMPS         5
+#define OP_READ_CPU_TEMPS     2
 
 #define KERNEL_INDEX_SMC      2
 

@@ -576,7 +576,7 @@ void usage(char* prog)
     printf("Apple System Management Control (SMC) tool %s\n", VERSION);
     printf("Usage:\n");
     printf("%s [options]\n", prog);
-    printf("    -t         : list CPU temperatures\n");
+    printf("    -c         : list CPU temperatures\n");
     printf("    -h         : help\n");
     printf("    -l         : list all keys and values\n");
     printf("    -v         : version\n");
@@ -593,12 +593,12 @@ int main(int argc, char *argv[])
     UInt32Char_t  key = { 0 };
     SMCVal_t      val;
     
-    while ((c = getopt(argc, argv, "fthk:lrw:v")) != -1)
+    while ((c = getopt(argc, argv, "chk:l:v")) != -1)
     {
         switch(c)
         {
-            case 't':
-                op = OP_READ_TEMPS;
+            case 'c':
+                op = OP_READ_CPU_TEMPS;
                 break;
             case 'l':
                 op = OP_LIST;
@@ -629,7 +629,7 @@ int main(int argc, char *argv[])
             if (result != kIOReturnSuccess)
                 printf("Error: SMCPrintAll() = %08x\n", result);
             break;
-        case OP_READ_TEMPS:
+        case OP_READ_CPU_TEMPS:
             result = SMCPrintTemps();
             if (result != kIOReturnSuccess)
                 printf("Error: SMCPrintTemps() = %08x\n", result);
