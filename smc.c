@@ -540,63 +540,6 @@ float getFloatFromVal(SMCVal_t val)
     return fval;
 }
 
-kern_return_t SMCPrintFans(void)
-{
-    kern_return_t result;
-    SMCVal_t      val;
-    UInt32Char_t  key;
-    int           totalFans, i;
-    
-    result = SMCReadKey("FNum", &val);
-    if (result != kIOReturnSuccess)
-        return kIOReturnError;
-    
-    totalFans = _strtoul((char *)val.bytes, val.dataSize, 10);
-    printf("Total fans in system: %d\n", totalFans);
-    
-    for (i = 0; i < totalFans; i++)
-    {
-        printf("\nFan #%d:\n", i);
-        sprintf(key, "F%cID", fannum[i]);
-        SMCReadKey(key, &val);
-        if(val.dataSize > 0) {
-            printf("    Fan ID       : %s\n", val.bytes+4);
-        }
-        sprintf(key, "F%cAc", fannum[i]);
-        SMCReadKey(key, &val);
-        printf("    Current speed : %.0f\n", getFloatFromVal(val));
-        sprintf(key, "F%cMn", fannum[i]);
-        SMCReadKey(key, &val);
-        printf("    Minimum speed: %.0f\n", getFloatFromVal(val));
-        sprintf(key, "F%cMx", fannum[i]);
-        SMCReadKey(key, &val);
-        printf("    Maximum speed: %.0f\n", getFloatFromVal(val));
-        sprintf(key, "F%cSf", fannum[i]);
-        SMCReadKey(key, &val);
-        printf("    Safe speed   : %.0f\n", getFloatFromVal(val));
-        sprintf(key, "F%cTg", fannum[i]);
-        SMCReadKey(key, &val);
-        printf("    Target speed : %.0f\n", getFloatFromVal(val));
-        SMCReadKey("FS! ", &val);
-        if(val.dataSize > 0) {
-            if ((_strtoul((char *)val.bytes, 2, 16) & (1 << i)) == 0)
-                printf("    Mode         : auto\n");
-            else
-                printf("    Mode         : forced\n");
-        }
-        else {
-            sprintf(key, "F%dMd", i);
-            SMCReadKey(key, &val);
-            if (getFloatFromVal(val))
-                printf("    Mode         : forced\n");
-            else
-                printf("    Mode         : auto\n");
-        }
-    }
-    
-    return kIOReturnSuccess;
-}
-
 bool isCPUCoreTemps(UInt32Char_t key)
 {
     int i;
@@ -667,7 +610,6 @@ void usage(char* prog)
     printf("Apple System Management Control (SMC) tool %s\n", VERSION);
     printf("Usage:\n");
     printf("%s [options]\n", prog);
-    printf("    -f         : fan info decoded\n");
     printf("    -t         : list CPU temperatures\n");
     printf("    -h         : help\n");
     printf("    -k <key>   : key to manipulate\n");
@@ -713,9 +655,6 @@ int main(int argc, char *argv[])
     {
         switch(c)
         {
-            case 'f':
-                op = OP_READ_FAN;
-                break;
             case 't':
                 op = OP_READ_TEMPS;
                 break;
@@ -787,15 +726,10 @@ int main(int argc, char *argv[])
                 printf("Error: specify a key to read\n");
             }
             break;
-        case OP_READ_FAN:
-            result = SMCPrintFans();
-            if (result != kIOReturnSuccess)
-                printf("Error: SMCPrintFans() = %08x\n", result);
-            break;
         case OP_READ_TEMPS:
             result = SMCPrintTemps();
             if (result != kIOReturnSuccess)
-                printf("Error: SMCPrintFans() = %08x\n", result);
+                printf("Error: SMCPrintTemps() = %08x\n", result);
             break;
         case OP_WRITE:
             if (strlen(key) > 0)

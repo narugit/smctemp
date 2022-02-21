@@ -28,7 +28,6 @@
 #define OP_NONE               0
 #define OP_LIST               1 
 #define OP_READ               2
-#define OP_READ_FAN           3
 #define OP_WRITE              4
 #define OP_READ_TEMPS         5
 
@@ -99,8 +98,6 @@ typedef struct {
 } SMCKeyData_keyInfo_t;
 
 typedef unsigned char              SMCBytes_t[32];
-
-static UInt8 fannum[] = "0123456789ABCDEFGHIJ";
 
 typedef struct {
   UInt32                  key; 
