@@ -74,6 +74,8 @@
 
 #define DATATYPE_PWM          "{pwm"
 
+#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+
 typedef struct {
     char                  major;
     char                  minor;
@@ -137,4 +139,26 @@ kern_return_t SMCWriteSimple(UInt32Char_t key,char *wvalue,io_connect_t conn);
 kern_return_t SMCOpen(io_connect_t *conn);
 kern_return_t SMCClose(io_connect_t conn);
 kern_return_t SMCReadKey2(UInt32Char_t key, SMCVal_t *val,io_connect_t conn);
+
+typedef struct {
+    UInt32Char_t key;
+    char name[40];
+} Sensor_t;
+
+// List of key and name: https://github.com/exelban/stats/blob/0e2e13c626b650ac7743ef620869d2b7857665cd/Modules/Sensors/values.swift#L206-L215
+Sensor_t CPUECoreTemps[] = {
+    {"Tp09", "CPU efficient core 1 temperature"},
+    {"Tp0T", "CPU efficient core 2 temperature"},
+};
+
+Sensor_t CPUPCoreTemps[] = {
+    {"Tp01", "CPU performance core 1 temperature"},
+    {"Tp05", "CPU performance core 2 temperature"},
+    {"Tp0D", "CPU performance core 3 temperature"},
+    {"Tp0H", "CPU performance core 4 temperature"},
+    {"Tp0L", "CPU performance core 5 temperature"},
+    {"Tp0P", "CPU performance core 6 temperature"},
+    {"Tp0X", "CPU performance core 7 temperature"},
+    {"Tp0b", "CPU performance core 8 temperature"},
+};
 

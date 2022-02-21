@@ -597,6 +597,29 @@ kern_return_t SMCPrintFans(void)
     return kIOReturnSuccess;
 }
 
+bool isCPUCoreTemps(UInt32Char_t key)
+{
+    int i;
+
+    for (i = 0; i < COUNT_OF(CPUECoreTemps); i++)
+    {
+        if (strcmp(key, CPUECoreTemps[i].key) == 0)
+        {
+            return true;
+        }
+    }
+
+    for (i = 0; i < COUNT_OF(CPUPCoreTemps); i++)
+    {
+        if (strcmp(key, CPUPCoreTemps[i].key) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;    
+}
+
 kern_return_t SMCPrintTemps(void)
 {
     kern_return_t result;
@@ -607,9 +630,12 @@ kern_return_t SMCPrintTemps(void)
     UInt32Char_t  key;
     SMCVal_t      val;
 
+    char *p;
+
     totalKeys = SMCReadIndexCount();
     for (i = 0; i < totalKeys; i++)
     {
+        p = NULL;
         memset(&inputStructure, 0, sizeof(SMCKeyData_t));
         memset(&outputStructure, 0, sizeof(SMCKeyData_t));
         memset(&val, 0, sizeof(SMCVal_t));
@@ -622,14 +648,13 @@ kern_return_t SMCPrintTemps(void)
             continue;
 
         _ultostr(key, outputStructure.key);
-        if ( key[0] != 'T' )
+        if (!isCPUCoreTemps(key))
             continue;
 
         SMCReadKey(key, &val);
-        //printVal(val);
-        if (strcmp(val.dataType, DATATYPE_SP78) == 0 && val.dataSize == 2) {
-          printf("%-4s ", val.key);
-          printSP78(val);
+        if (strcmp(val.dataType, DATATYPE_FLT) == 0 && val.dataSize == 4) {
+          printf("%-4s,", val.key);
+          printFLT(val);
           printf("\n");
         }
     }
@@ -643,7 +668,7 @@ void usage(char* prog)
     printf("Usage:\n");
     printf("%s [options]\n", prog);
     printf("    -f         : fan info decoded\n");
-    printf("    -t         : list all temperatures\n");
+    printf("    -t         : list CPU temperatures\n");
     printf("    -h         : help\n");
     printf("    -k <key>   : key to manipulate\n");
     printf("    -l         : list all keys and values\n");
