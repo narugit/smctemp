@@ -613,7 +613,6 @@ void usage(char* prog)
     printf("    -t         : list CPU temperatures\n");
     printf("    -h         : help\n");
     printf("    -l         : list all keys and values\n");
-    printf("    -r         : read the value of a key\n");
     printf("    -w <value> : write the specified value to a key\n");
     printf("    -v         : version\n");
     printf("\n");
@@ -660,9 +659,6 @@ int main(int argc, char *argv[])
             case 'l':
                 op = OP_LIST;
                 break;
-            case 'r':
-                op = OP_READ;
-                break;
             case 'v':
                 printf("%s\n", VERSION);
                 return 0;
@@ -706,20 +702,6 @@ int main(int argc, char *argv[])
             result = SMCPrintAll();
             if (result != kIOReturnSuccess)
                 printf("Error: SMCPrintAll() = %08x\n", result);
-            break;
-        case OP_READ:
-            if (strlen(key) > 0)
-            {
-                result = SMCReadKey(key, &val);
-                if (result != kIOReturnSuccess)
-                    printf("Error: SMCReadKey() = %08x\n", result);
-                else
-                    printVal(val);
-            }
-            else
-            {
-                printf("Error: specify a key to read\n");
-            }
             break;
         case OP_READ_TEMPS:
             result = SMCPrintTemps();
