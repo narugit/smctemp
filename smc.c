@@ -612,7 +612,6 @@ void usage(char* prog)
     printf("%s [options]\n", prog);
     printf("    -t         : list CPU temperatures\n");
     printf("    -h         : help\n");
-    printf("    -k <key>   : key to manipulate\n");
     printf("    -l         : list all keys and values\n");
     printf("    -r         : read the value of a key\n");
     printf("    -w <value> : write the specified value to a key\n");
@@ -657,10 +656,6 @@ int main(int argc, char *argv[])
         {
             case 't':
                 op = OP_READ_TEMPS;
-                break;
-            case 'k':
-                strncpy(key, optarg, sizeof(key));   //fix for buffer overflow
-                key[sizeof(key) - 1] = '\0';
                 break;
             case 'l':
                 op = OP_LIST;
