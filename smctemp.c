@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <IOKit/IOKitLib.h>
-#include "smc.h"
+#include "smctemp.h"
 #include <libkern/OSAtomic.h>
 
 // Cache the keyInfo to lower the energy impact of SMCReadKey() / SMCReadKey2()

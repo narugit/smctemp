@@ -2,13 +2,13 @@ CC = gcc
 CFLAGS = -mmacosx-version-min=10.4  -Wall -g -framework IOKit
 CPPFLAGS = -DCMD_TOOL_BUILD
 
-all: smc 
+all: smctemp
 
-smc: smc.o
-	$(CC) $(CFLAGS) -o smc smc.o
+smctemp: smctemp.o
+	$(CC) $(CFLAGS) -o smctemp smctemp.o
 
-smc.o: smc.h smc.c
-	$(CC) $(CPPFLAGS) -c smc.c
+smctemp.o: smctemp.h smctemp.c
+	$(CC) $(CPPFLAGS) -c smctemp.c
 
 clean:
-	-rm -f smc smc.o
+	-rm -f smctemp smctemp.o
