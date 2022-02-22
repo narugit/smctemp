@@ -418,9 +418,7 @@ kern_return_t SMCReadKey2(UInt32Char_t key, SMCVal_t *val,io_connect_t conn)
     return kIOReturnSuccess;
 }
 
-#pragma mark Command line only
 // Exclude command-line only code from smcFanControl UI
-#ifdef CMD_TOOL_BUILD
 
 io_connect_t g_conn = 0;
 
@@ -595,7 +593,7 @@ int main(int argc, char *argv[])
     UInt32Char_t  key = { 0 };
     SMCVal_t      val;
     
-    while ((c = getopt(argc, argv, "chk:l:v")) != -1)
+    while ((c = getopt(argc, argv, "chlk:l:v")) != -1)
     {
         switch(c)
         {
@@ -641,7 +639,6 @@ int main(int argc, char *argv[])
     smc_close();
     return 0;
 }
-#endif //#ifdef CMD_TOOL
 
 
 
