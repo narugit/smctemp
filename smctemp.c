@@ -2,6 +2,8 @@
  * Apple System Management Control (SMC) Tool
  * Copyright (C) 2006 devnull
  * Portions Copyright (C) 2013 Michael Wilber
+ * Copyright (C) 2022 narugit
+ *   - Modified Date: 2022/2/22
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
