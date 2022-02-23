@@ -404,7 +404,7 @@ double SmcTemp::GetCpuTemp() {
 void SmcTemp::PrintCpuTemp() {
   double temp;
   temp = GetCpuTemp();
-  std::cout << std::fixed << std::setprecision(1) << temp << std::endl;
+  std::cout << std::fixed << std::setprecision(1) << temp;
 }
 
 }
