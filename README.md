@@ -13,16 +13,7 @@ Usage:
     -v         : version
 
 $ ./smctemp -c
-Tp01,44
-Tp05,44
-Tp09,43
-Tp0D,44
-Tp0H,44
-Tp0L,43
-Tp0P,43
-Tp0T,44
-Tp0X,45
-Tp0b,42
+64.2
 ```
 
 
