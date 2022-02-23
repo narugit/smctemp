@@ -57,7 +57,7 @@ constexpr UInt32Char_t kSensorTp0p = "Tp0P"; // CPU performance core 6 temperatu
 constexpr UInt32Char_t kSensorTp0x = "Tp0X"; // CPU performance core 7 temperature
 constexpr UInt32Char_t kSensorTp0b = "Tp0b"; // CPU performance core 8 temperature
 constexpr UInt32Char_t kSensorTp09 = "Tp09"; // CPU efficient core 1 temperature
-constexpr UInt32Char_t kSensorTp0T = "Tp0T"; // CPU efficient core 2 temperature
+constexpr UInt32Char_t kSensorTp0t = "Tp0T"; // CPU efficient core 2 temperature
 #endif
 
 class SmcAccessor {

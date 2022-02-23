@@ -28,6 +28,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "smctemp_string.h"
 
@@ -368,10 +369,34 @@ double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
   temp = smc_accessor_.ReadValue(kSensorTc0p);
+  if (temp < 110.0) {
+    return temp;
+  }
+  temp = smc_accessor_.ReadValue(kSensorTc0d);
+  if (temp < 110.0) {
+    return temp;
+  }
 #elif defined(ARCH_TYPE_ARM64)
+  std::vector<std::string> sensors{
+      static_cast<std::string>(kSensorTp01),
+      static_cast<std::string>(kSensorTp05),
+      static_cast<std::string>(kSensorTp0d),
+      static_cast<std::string>(kSensorTp0h),
+      static_cast<std::string>(kSensorTp0l),
+      static_cast<std::string>(kSensorTp0p),
+      static_cast<std::string>(kSensorTp0x),
+      static_cast<std::string>(kSensorTp0b),
+      static_cast<std::string>(kSensorTp09),
+      static_cast<std::string>(kSensorTp0t),
+  };
+  for (auto sensor : sensors) {
+    temp += smc_accessor_.ReadValue(sensor.c_str());
+  }
+  temp /= sensors.size();
+  if (temp < 110.0) {
+    return temp;
+  }
 #endif
-
- // smc_accessor_.ReadSmcVal("PZ0E", val);
   return temp;
 }
 
