@@ -4,11 +4,11 @@ I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hh
 ## Usage 
 ```console
 $ ./smctemp -h
-Get temperature by using Apple System Management Control (SMC) tool 0.01
+Check Temperature by using Apple System Management Control (Smc) tool 0.1
 Usage:
-./smctemp [options]
+smctemp [options]
+    -c         : list CPU temperatures (Celsius)
     -h         : help
-    -c         : list CPU temperatures
     -l         : list all keys and values
     -v         : version
 
@@ -16,17 +16,10 @@ $ ./smctemp -c
 64.2
 ```
 
-
-## Temperature Sensors
-### CPU Sensors
-- Tp09
-- Tp0T
-- Tp01
-- Tp05
-- Tp0D
-- Tp0H
-- Tp0L
-- Tp0P
-- Tp0X
-- Tp0b
-
+## How to Use
+```console
+$ git clone https://github.com/narugit/smctemp
+$ cd smctemp
+$ make
+$ ./smctemp -c
+```
