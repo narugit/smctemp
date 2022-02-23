@@ -6,7 +6,7 @@ void usage(char* prog) {
   std::cout << "Check Temperature by using Apple System Management Control (Smc) tool " << smctemp::kVersion << std::endl;
   std::cout << "Usage:" << std::endl;
   std::cout << prog << " [options]" << std::endl;
-  std::cout << "    -c         : list CPU temperatures" << std::endl;
+  std::cout << "    -c         : list CPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
   std::cout << "    -v         : version" << std::endl;
