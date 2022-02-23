@@ -6,9 +6,17 @@ It works on x86_64 and arm64(M1 mac).
 ## Acknowledgements
 I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hholtmann/smcFanControl/tree/ad374ffb1dd088a7676719e53dbd2886f8fafdff/smc-command) and modified it to specialize in temperature acquisition.
 
+## How to Use
+```console
+$ git clone https://github.com/narugit/smctemp
+$ cd smctemp
+$ make install
+$ smctemp -c
+```
+
 ## Usage 
 ```console
-$ ./smctemp -h
+$ smctemp -h
 Check Temperature by using Apple System Management Control (Smc) tool 0.1
 Usage:
 smctemp [options]
@@ -17,14 +25,6 @@ smctemp [options]
     -l         : list all keys and values
     -v         : version
 
-$ ./smctemp -c
+$ smctemp -c
 64.2
-```
-
-## How to Use
-```console
-$ git clone https://github.com/narugit/smctemp
-$ cd smctemp
-$ make
-$ ./smctemp -c
 ```

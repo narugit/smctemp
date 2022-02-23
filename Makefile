@@ -1,5 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++20 -g -framework IOKit
+EXES = smctemp
+DEST = /usr/local/bin
 
 ARCH := $(shell uname -m)
 ifeq ($(ARCH), x86_64)
@@ -10,10 +12,10 @@ else
   $(error Not support architecture: $(ARCH))
 endif
 
-all: smctemp
+all: $(EXES)
 
-smctemp: smctemp_string.o smctemp.o main.cc
-	$(CXX) $(CXXFLAGS) -o smctemp smctemp.o smctemp_string.o main.cc
+$(EXES): smctemp_string.o smctemp.o main.cc
+	$(CXX) $(CXXFLAGS) -o $(EXES) smctemp.o smctemp_string.o main.cc
 
 smctemp.o: smctemp_string.h smctemp.h smctemp.cc
 	$(CXX) $(CXXFLAGS) -o smctemp.o -c smctemp.cc
@@ -21,7 +23,11 @@ smctemp.o: smctemp_string.h smctemp.h smctemp.cc
 smctemp_string.o: smctemp_string.h smctemp_string.cc
 	$(CXX) $(CXXFLAGS) -o smctemp_string.o -c smctemp_string.cc
 
-.PHONY: clean
+install: $(EXES)
+	install -d $(DEST)
+	install -m 0755 $(EXES) $(DEST)
 
 clean:
-	-rm -f smctemp smctemp.o smctemp_string.o
+	rm -f $(EXES) smctemp.o smctemp_string.o
+
+.PHONY: clean
