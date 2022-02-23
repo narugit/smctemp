@@ -1,25 +1,27 @@
 CXX = g++
-CXXFLAGS = -Wall -g -framework IOKit
+CXXFLAGS = -Wall -std=c++20 -g -framework IOKit
 
 ARCH := $(shell uname -m)
 ifeq ($(ARCH), x86_64)
-	TARGET_ARCH := $(ARCH)
+	CXXFLAGS += -DARCH_TYPE_X86_64
 else ifeq ($(ARCH), arm64)
-	TARGET_ARCH := $(ARCH)
+	CXXFLAGS += -DARCH_TYPE_ARM64
 else
   $(error Not support architecture: $(ARCH))
 endif
-CXXFLAGS += -DTARGET_ARCH=$(TARGET_ARCH)
 
 all: smctemp
 
-smctemp: smctemp.o
-	$(CXX) $(CXXFLAGS) -o smctemp smctemp.o
+smctemp: smctemp_string.o smctemp.o main.cc
+	$(CXX) $(CXXFLAGS) -o smctemp smctemp.o smctemp_string.o main.cc
 
-smctemp.o: smctemp.h smctemp.cc
-	$(CXX) $(CXXFLAGS) -c smctemp.cc
+smctemp.o: smctemp_string.h smctemp.h smctemp.cc
+	$(CXX) $(CXXFLAGS) -o smctemp.o -c smctemp.cc
+
+smctemp_string.o: smctemp_string.h smctemp_string.cc
+	$(CXX) $(CXXFLAGS) -o smctemp_string.o -c smctemp_string.cc
 
 .PHONY: clean
 
 clean:
-	-rm -f smctemp smctemp.o
+	-rm -f smctemp smctemp.o smctemp_string.o

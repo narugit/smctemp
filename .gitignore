@@ -1,2 +1,3 @@
 smctemp
-smctemp.o
+smctemp.dSYM
+*.o
