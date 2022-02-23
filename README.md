@@ -1,3 +1,8 @@
+## smctemp
+Print CPU temperature on macOS.
+
+It works on x86_64 and arm64(M1 mac).
+
 ## Acknowledgements
 I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hholtmann/smcFanControl/tree/ad374ffb1dd088a7676719e53dbd2886f8fafdff/smc-command) and modified it to specialize in temperature acquisition.
 
