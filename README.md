@@ -10,7 +10,7 @@ I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hh
 ```console
 $ git clone https://github.com/narugit/smctemp
 $ cd smctemp
-$ make install
+$ sudo make install
 $ smctemp -c
 ```
 
