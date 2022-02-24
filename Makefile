@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++20 -g -framework IOKit
+CXXFLAGS = -Wall -std=c++17 -g -framework IOKit
 EXES = smctemp
 DEST = /usr/local/bin
 
