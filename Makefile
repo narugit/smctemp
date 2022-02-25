@@ -9,7 +9,7 @@ ifeq ($(ARCH), x86_64)
 else ifeq ($(ARCH), arm64)
 	CXXFLAGS += -DARCH_TYPE_ARM64
 else
-  $(error Not support architecture: $(ARCH))
+	$(error Not support architecture: $(ARCH))
 endif
 
 all: $(EXES)
