@@ -46,6 +46,8 @@ constexpr int kOpReadCpuTemp = 2;
 // - https://github.com/acidanthera/VirtualSMC/blob/632fec680d996a5dd015afd9acf0ba40f75e69e2/Docs/SMCSensorKeys.txt
 #if defined(ARCH_TYPE_X86_64)
 constexpr UInt32Char_t kSensorTc0d = "TC0D"; // CPU die temperature
+constexpr UInt32Char_t kSensorTc0e = "TC0E"; // CPU PECI die filtered temperature
+constexpr UInt32Char_t kSensorTc0f = "TC0F"; // CPU PECI die temperature filtered then adjusted
 constexpr UInt32Char_t kSensorTc0p = "TC0P"; // CPU proximity temperature
 #elif defined(ARCH_TYPE_ARM64)
 constexpr UInt32Char_t kSensorTp01 = "Tp01"; // CPU performance core 1 temperature

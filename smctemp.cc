@@ -368,11 +368,21 @@ kern_return_t SmcAccessor::PrintAll() {
 double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
-  temp = smc_accessor_.ReadValue(kSensorTc0p);
-  if (temp < 110.0) {
+  // The reason why I prefer CPU die temperature to CPU proximity temperature:
+  // https://github.com/narugit/smctemp/issues/2
+  temp = smc_accessor_.ReadValue(kSensorTc0d);
+  if (0.0 < temp && temp < 110.0) {
     return temp;
   }
-  temp = smc_accessor_.ReadValue(kSensorTc0d);
+  temp = smc_accessor_.ReadValue(kSensorTc0e);
+  if (0.0 < temp && temp < 110.0) {
+    return temp;
+  }
+  temp = smc_accessor_.ReadValue(kSensorTc0f);
+  if (0.0 < temp && temp < 110.0) {
+    return temp;
+  }
+  temp = smc_accessor_.ReadValue(kSensorTc0p);
   if (temp < 110.0) {
     return temp;
   }
