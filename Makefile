@@ -4,8 +4,14 @@ EXES = smctemp
 DEST = /usr/local/bin
 
 ARCH := $(shell uname -m)
+PROCESS_IS_TRANSLATED := $(shell sysctl -in sysctl.proc_translated)
 ifeq ($(ARCH), x86_64)
+ifeq ($(PROCESS_IS_TRANSLATED), 1)
+	# Running under Rosetta
+	CXXFLAGS += -DARCH_TYPE_ARM64
+else
 	CXXFLAGS += -DARCH_TYPE_X86_64
+endif
 else ifeq ($(ARCH), arm64)
 	CXXFLAGS += -DARCH_TYPE_ARM64
 else
