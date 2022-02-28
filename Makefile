@@ -28,6 +28,6 @@ install: $(EXES)
 	install -m 0755 $(EXES) $(DEST)
 
 clean:
-	rm -f $(EXES) smctemp.o smctemp_string.o
+	rm -rf $(EXES) smctemp.o smctemp_string.o smctemp.dSYM
 
 .PHONY: clean
