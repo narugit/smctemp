@@ -7,6 +7,7 @@ void usage(char* prog) {
   std::cout << "Usage:" << std::endl;
   std::cout << prog << " [options]" << std::endl;
   std::cout << "    -c         : list CPU temperatures (Celsius)" << std::endl;
+  std::cout << "    -s         : All CPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
   std::cout << "    -v         : version" << std::endl;
@@ -21,10 +22,13 @@ int main(int argc, char *argv[]) {
   smctemp::UInt32Char_t  key = { 0 };
   smctemp::SmcVal_t      val;
 
-  while ((c = getopt(argc, argv, "clvh")) != -1) {
+  while ((c = getopt(argc, argv, "cslvh")) != -1) {
     switch(c) {
       case 'c':
         op = smctemp::kOpReadCpuTemp;
+        break;
+      case 's':
+        op = smctemp::kOpReadAllCpuTemp;
         break;
       case 'l':
         op = smctemp::kOpList;
@@ -60,6 +64,9 @@ int main(int argc, char *argv[]) {
       break;
     case smctemp::kOpReadCpuTemp:
       smc_temp.PrintCpuTemp();
+      break;
+    case smctemp::kOpReadAllCpuTemp:
+      smc_temp.PrintAllCpuTemp();
       break;
   }
 

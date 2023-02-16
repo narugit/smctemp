@@ -40,6 +40,7 @@ constexpr uint32_t kKernelIndexSmc = 2;
 constexpr int kOpNone = 0;
 constexpr int kOpList = 1;
 constexpr int kOpReadCpuTemp = 2;
+constexpr int kOpReadAllCpuTemp = 3;
 
 // List of key and name: 
 // - https://github.com/exelban/stats/blob/0e2e13c626b650ac7743ef620869d2b7857665cd/Modules/Sensors/values.swift
@@ -49,6 +50,15 @@ constexpr UInt32Char_t kSensorTc0d = "TC0D"; // CPU die temperature
 constexpr UInt32Char_t kSensorTc0e = "TC0E"; // CPU PECI die filtered temperature
 constexpr UInt32Char_t kSensorTc0f = "TC0F"; // CPU PECI die temperature filtered then adjusted
 constexpr UInt32Char_t kSensorTc0p = "TC0P"; // CPU proximity temperature
+constexpr UInt32Char_t kSensorTc0c = "TC0C"; // CPU Core 0 temp
+constexpr UInt32Char_t kSensorTc1c = "TC1C"; // CPU Core 1 temp
+constexpr UInt32Char_t kSensorTc2c = "TC2C"; // CPU Core 2 temp
+constexpr UInt32Char_t kSensorTc3c = "TC3C"; // CPU Core 3 temp
+constexpr UInt32Char_t kSensorTc4c = "TC4C"; // CPU Core 4 temp
+constexpr UInt32Char_t kSensorTg0d = "TG0D"; // GPU AMD Radeon
+constexpr UInt32Char_t kSensorTcgc = "TCGC"; // GPU Intel Graphics
+constexpr UInt32Char_t kSensorTm0p = "Tm0P"; // Mainboard
+
 #elif defined(ARCH_TYPE_ARM64)
 constexpr UInt32Char_t kSensorTp01 = "Tp01"; // CPU performance core 1 temperature
 constexpr UInt32Char_t kSensorTp05 = "Tp05"; // CPU performance core 2 temperature
@@ -60,6 +70,7 @@ constexpr UInt32Char_t kSensorTp0x = "Tp0X"; // CPU performance core 7 temperatu
 constexpr UInt32Char_t kSensorTp0b = "Tp0b"; // CPU performance core 8 temperature
 constexpr UInt32Char_t kSensorTp09 = "Tp09"; // CPU efficient core 1 temperature
 constexpr UInt32Char_t kSensorTp0t = "Tp0T"; // CPU efficient core 2 temperature
+constexpr UInt32Char_t kSensorTg05= "Tg05"; // GPU
 #endif
 
 class SmcAccessor {
@@ -86,11 +97,13 @@ class SmcTemp {
  private:
   SmcAccessor smc_accessor_;
   double GetCpuTemp();
+  char GetAllCpuTemp();
 
  public:
   SmcTemp() = default;
   ~SmcTemp() = default;
   void PrintCpuTemp();
+  void PrintAllCpuTemp();
 };
 
 typedef struct {

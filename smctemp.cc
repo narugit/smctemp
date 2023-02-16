@@ -410,6 +410,38 @@ double SmcTemp::GetCpuTemp() {
   return temp;
 }
 
+char SmcTemp::GetAllCpuTemp() {
+  /*char temp_s;*/
+  std::string temp_s;
+
+#if defined(ARCH_TYPE_X86_64)
+
+  temp_s += "CPU temperature - ARCH_TYPE_X86_64:\n";
+
+  std::cout << "coretemp_core_1:" << smc_accessor_.ReadValue(kSensorTc1c) << "\n";
+  std::cout << "coretemp_core_2:" << smc_accessor_.ReadValue(kSensorTc2c) << "\n";
+  std::cout << "coretemp_core_3:" << smc_accessor_.ReadValue(kSensorTc3c) << "\n";
+  std::cout << "coretemp_core_4:" << smc_accessor_.ReadValue(kSensorTc4c) << "\n";
+  std::cout << "GPU_AMD_Radeon:" << smc_accessor_.ReadValue(kSensorTg0d) << "\n";
+  std::cout << "GPU_Intel_Graphics:" << smc_accessor_.ReadValue(kSensorTcgc) << "\n";
+  std::cout << "Mainboard:" << smc_accessor_.ReadValue(kSensorTm0p);
+
+
+#elif defined(ARCH_TYPE_ARM64)
+  std::cout << "coretemp_core_1:" << smc_accessor_.ReadValue(kSensorTp01) << "\n";
+  std::cout << "coretemp_core_2:" << smc_accessor_.ReadValue(kSensorTp05) << "\n";
+  std::cout << "coretemp_core_3:" << smc_accessor_.ReadValue(kSensorTp0d) << "\n";
+  std::cout << "coretemp_core_4:" << smc_accessor_.ReadValue(kSensorTp0h) << "\n";
+  std::cout << "coretemp_core_5:" << smc_accessor_.ReadValue(kSensorTp0l) << "\n";
+  std::cout << "coretemp_core_6:" << smc_accessor_.ReadValue(kSensorTp0p) << "\n";
+  std::cout << "coretemp_core_7:" << smc_accessor_.ReadValue(kSensorTp0x) << "\n";
+  std::cout << "coretemp_core_8:" << smc_accessor_.ReadValue(kSensorTp0b) << "\n";
+  std::cout << "GPU" << smc_accessor_.ReadValue(kSensorTg05);
+
+
+#endif
+  return 0;
+}
 
 void SmcTemp::PrintCpuTemp() {
   double temp;
@@ -417,5 +449,8 @@ void SmcTemp::PrintCpuTemp() {
   std::cout << std::fixed << std::setprecision(1) << temp;
 }
 
+void SmcTemp::PrintAllCpuTemp() {
+  std::string temp_s;
+  temp_s = GetAllCpuTemp();
 }
-
+}

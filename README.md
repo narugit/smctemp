@@ -8,7 +8,7 @@ I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hh
 
 ## How to Use
 ```console
-$ git clone https://github.com/narugit/smctemp
+$ git clone https://github.com/a-vakhitov/smctemp
 $ cd smctemp
 $ sudo make install
 $ smctemp -c
@@ -21,6 +21,7 @@ Check Temperature by using Apple System Management Control (Smc) tool 0.1
 Usage:
 smctemp [options]
     -c         : list CPU temperatures (Celsius)
+    -s         : All CPU temperatures (Celsius)"
     -h         : help
     -l         : list all keys and values
     -v         : version
