@@ -27,6 +27,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -403,9 +404,19 @@ double SmcTemp::GetCpuTemp() {
     temp += smc_accessor_.ReadValue(sensor.c_str());
   }
   temp /= sensors.size();
-  if (temp < 110.0) {
+  if (temp > std::numeric_limits<double>::epsilon()) {
     return temp;
   }
+  std::vector<std::string> aux_sensors{
+    static_cast<std::string>(kSensorTc0a),
+    static_cast<std::string>(kSensorTc0b),
+    static_cast<std::string>(kSensorTc0x),
+    static_cast<std::string>(kSensorTc0z),
+  };
+  for (auto sensor : aux_sensors) {
+    temp += smc_accessor_.ReadValue(sensor.c_str());
+  }
+  temp /= aux_sensors.size();
 #endif
   return temp;
 }
