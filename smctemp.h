@@ -50,6 +50,10 @@ constexpr UInt32Char_t kSensorTc0e = "TC0E"; // CPU PECI die filtered temperatur
 constexpr UInt32Char_t kSensorTc0f = "TC0F"; // CPU PECI die temperature filtered then adjusted
 constexpr UInt32Char_t kSensorTc0p = "TC0P"; // CPU proximity temperature
 #elif defined(ARCH_TYPE_ARM64)
+constexpr UInt32Char_t kSensorTc0a = "Tc0a";
+constexpr UInt32Char_t kSensorTc0b = "Tc0b";
+constexpr UInt32Char_t kSensorTc0x = "Tc0x";
+constexpr UInt32Char_t kSensorTc0z = "Tc0z";
 constexpr UInt32Char_t kSensorTp01 = "Tp01"; // CPU performance core 1 temperature
 constexpr UInt32Char_t kSensorTp05 = "Tp05"; // CPU performance core 2 temperature
 constexpr UInt32Char_t kSensorTp0d = "Tp0D"; // CPU performance core 3 temperature
