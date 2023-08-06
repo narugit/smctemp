@@ -1,0 +1,49 @@
+name: Create release
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: Ex. 1.2.0
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TZ: 'Asia/Tokyo'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Audit version
+        run: |
+          expect_version=$(sed -n 's/.*kVersion = "\(.*\)";/\1/p' smctemp.h)
+          input_version=${{ github.event.inputs.version }}
+          if [[ "$expect_version" != "$input_version" ]]; then
+            echo "ERROR: Version is mismatched. Expected version: $expect_version"
+            exit 1
+          fi
+      - name: Set version and create tag
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "Creating tag $VERSION"
+          git config --global user.name 'narugit'
+          git config --global user.email 'narusens@gmail.com'
+          git tag -a $VERSION -m "Version $VERSION"
+          git push origin $VERSION
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+
