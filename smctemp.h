@@ -54,16 +54,20 @@ constexpr UInt32Char_t kSensorTc0a = "Tc0a";
 constexpr UInt32Char_t kSensorTc0b = "Tc0b";
 constexpr UInt32Char_t kSensorTc0x = "Tc0x";
 constexpr UInt32Char_t kSensorTc0z = "Tc0z";
-constexpr UInt32Char_t kSensorTp01 = "Tp01"; // CPU performance core 1 temperature
-constexpr UInt32Char_t kSensorTp05 = "Tp05"; // CPU performance core 2 temperature
-constexpr UInt32Char_t kSensorTp0d = "Tp0D"; // CPU performance core 3 temperature
-constexpr UInt32Char_t kSensorTp0h = "Tp0H"; // CPU performance core 4 temperature
-constexpr UInt32Char_t kSensorTp0l = "Tp0L"; // CPU performance core 5 temperature
-constexpr UInt32Char_t kSensorTp0p = "Tp0P"; // CPU performance core 6 temperature
-constexpr UInt32Char_t kSensorTp0x = "Tp0X"; // CPU performance core 7 temperature
-constexpr UInt32Char_t kSensorTp0b = "Tp0b"; // CPU performance core 8 temperature
-constexpr UInt32Char_t kSensorTp09 = "Tp09"; // CPU efficient core 1 temperature
-constexpr UInt32Char_t kSensorTp0t = "Tp0T"; // CPU efficient core 2 temperature
+constexpr UInt32Char_t kSensorTp01 = "Tp01";
+constexpr UInt32Char_t kSensorTp05 = "Tp05";
+constexpr UInt32Char_t kSensorTp0d = "Tp0D";
+constexpr UInt32Char_t kSensorTp0h = "Tp0H";
+constexpr UInt32Char_t kSensorTp0l = "Tp0L";
+constexpr UInt32Char_t kSensorTp0p = "Tp0P";
+constexpr UInt32Char_t kSensorTp0x = "Tp0X";
+constexpr UInt32Char_t kSensorTp0b = "Tp0b";
+constexpr UInt32Char_t kSensorTp09 = "Tp09";
+constexpr UInt32Char_t kSensorTp0t = "Tp0T";
+constexpr UInt32Char_t kSensorTp0j = "Tp0j";
+constexpr UInt32Char_t kSensorTp0r = "Tp0r";
+constexpr UInt32Char_t kSensorTp0f = "Tp0f";
+constexpr UInt32Char_t kSensorTp0n = "Tp0n";
 #endif
 
 class SmcAccessor {

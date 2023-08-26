@@ -33,6 +33,23 @@
 
 #include "smctemp_string.h"
 
+#if defined(ARCH_TYPE_ARM64)
+#include <sys/sysctl.h>
+#include <algorithm>
+#include <array>
+
+namespace {
+std::string getCPUModel() {
+  std::array<char, 512> buffer;
+  size_t bufferLength = buffer.size();
+  sysctlbyname("machdep.cpu.brand_string", buffer.data(), &bufferLength, nullptr, 0);
+  std::string cpuModel = buffer.data();
+  std::transform(cpuModel.begin(), cpuModel.end(), cpuModel.begin(), ::tolower);
+  return cpuModel;
+}
+}
+#endif
+
 // Cache the keyInfo to lower the energy impact of SmcReadKey() / SmcReadKey2()
 #define KEY_INFO_CACHE_SIZE 100
 namespace smctemp {
@@ -388,35 +405,82 @@ double SmcTemp::GetCpuTemp() {
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
-  std::vector<std::string> sensors{
-      static_cast<std::string>(kSensorTp01),
-      static_cast<std::string>(kSensorTp05),
-      static_cast<std::string>(kSensorTp0d),
-      static_cast<std::string>(kSensorTp0h),
-      static_cast<std::string>(kSensorTp0l),
-      static_cast<std::string>(kSensorTp0p),
-      static_cast<std::string>(kSensorTp0x),
-      static_cast<std::string>(kSensorTp0b),
-      static_cast<std::string>(kSensorTp09),
-      static_cast<std::string>(kSensorTp0t),
-  };
-  for (auto sensor : sensors) {
-    temp += smc_accessor_.ReadValue(sensor.c_str());
+  std::vector<std::string> sensors;
+  std::vector<std::string> aux_sensors;
+
+  const std::string cpumodel = getCPUModel();
+  if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // CPU core 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
+    // CPU core 2
+    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
+    // CPU core 3
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
+    // CPU core 4
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0n));
+    // CPU core 5
+    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
+    // CPU core 6
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    // CPU core 7
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
+    // CPU core 8
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0r));
+  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
+    // CPU performance core 1 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
+    // CPU performance core 2 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
+    // CPU performance core 3 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    // CPU performance core 4 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0h));
+    // CPU performance core 5 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0l));
+    // CPU performance core 6 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0p));
+    // CPU performance core 7 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0x));
+    // CPU performance core 8 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0b));
+    // CPU efficient core 1 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
+    // CPU efficient core 2 temperature
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0t));
+
+    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0a));
+    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0b));
+    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0x));
+    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0z));
+  } else {
+    // not supported
+    return temp;
   }
-  temp /= sensors.size();
+
+  size_t valid_sensor_count = 0;
+  for (auto sensor : sensors) {
+    auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
+    if (sensor_value > 0.0) {
+      temp += sensor_value;
+      valid_sensor_count++;
+    }
+  }
+  temp /= valid_sensor_count;
   if (temp > std::numeric_limits<double>::epsilon()) {
     return temp;
   }
-  std::vector<std::string> aux_sensors{
-    static_cast<std::string>(kSensorTc0a),
-    static_cast<std::string>(kSensorTc0b),
-    static_cast<std::string>(kSensorTc0x),
-    static_cast<std::string>(kSensorTc0z),
-  };
+
+  size_t valid_aux_sensor_count = 0;
   for (auto sensor : aux_sensors) {
-    temp += smc_accessor_.ReadValue(sensor.c_str());
+    auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
+    if (sensor_value > 0.0) {
+      temp += sensor_value;
+      valid_aux_sensor_count++;
+    }
   }
-  temp /= aux_sensors.size();
+  if (valid_aux_sensor_count > 0) {
+    temp /= valid_aux_sensor_count;
+  }
 #endif
   return temp;
 }
