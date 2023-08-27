@@ -89,12 +89,11 @@ class SmcAccessor {
 class SmcTemp {
  private:
   SmcAccessor smc_accessor_;
-  double GetCpuTemp();
 
  public:
   SmcTemp() = default;
   ~SmcTemp() = default;
-  void PrintCpuTemp();
+  double GetCpuTemp();
 };
 
 typedef struct {
