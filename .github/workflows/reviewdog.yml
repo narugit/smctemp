@@ -1,0 +1,53 @@
+name: Reviewdog
+on: [pull_request]
+jobs:
+  cpplint:
+    name: runner / cpplint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup reviewdog
+      uses: reviewdog/action-setup@v1
+      with:
+        reviewdog_version: latest
+    - name: Install cpplint
+      run: pip install cpplint
+    - name: run cpplint
+      env:
+        REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+      run: |
+        cpplint --linelength=120 --recursive . 2>&1 | \
+          reviewdog -efm="%f:%l: %m" -name="cpplint" -reporter="github-pr-review" \
+          -level="error" -fail-on-error=true -diff="git diff FETCH_HEAD"
+  misspell:
+    name: runner / misspell
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+      - name: Install misspell
+        run: |
+          curl -L https://git.io/misspell -o ${{ runner.temp }}/install-misspell.sh
+          sudo sh ${{ runner.temp }}/install-misspell.sh -b /usr/local/bin/
+      - name: Run misspell
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.github_token }}
+        run: |
+          git diff origin/${GITHUB_BASE_REF}...origin/${GITHUB_HEAD_REF} --name-only \
+          | xargs misspell -locale=US 2>&1 \
+          | reviewdog \
+              -efm="%f:%l:%c: %m" \
+              -fail-on-error=true \
+              -level="error" \
+              -name="misspell" \
+              -reporter="github-pr-review"
+
