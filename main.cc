@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <iostream>
 
 #include "smctemp.h"
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
       }
       break;
     case smctemp::kOpReadCpuTemp:
-      smc_temp.PrintCpuTemp();
+      std::cout << std::fixed << std::setprecision(1) << smc_temp.GetCpuTemp();
       break;
   }
 
