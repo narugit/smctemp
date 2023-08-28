@@ -37,6 +37,7 @@
 #include <sys/sysctl.h>
 #include <algorithm>
 #include <array>
+#include <utility>
 
 namespace {
 std::string getCPUModel() {
@@ -407,6 +408,7 @@ double SmcTemp::GetCpuTemp() {
 #elif defined(ARCH_TYPE_ARM64)
   std::vector<std::string> sensors;
   std::vector<std::string> aux_sensors;
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
 
   const std::string cpumodel = getCPUModel();
   if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
@@ -460,7 +462,7 @@ double SmcTemp::GetCpuTemp() {
   size_t valid_sensor_count = 0;
   for (auto sensor : sensors) {
     auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value > 0.0) {
+    if (sensor_value >= valid_temperature_limits.first && sensor_value <= valid_temperature_limits.second) {
       temp += sensor_value;
       valid_sensor_count++;
     }
@@ -473,7 +475,7 @@ double SmcTemp::GetCpuTemp() {
   size_t valid_aux_sensor_count = 0;
   for (auto sensor : aux_sensors) {
     auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value > 0.0) {
+    if (sensor_value > valid_temperature_limits.first && sensor_value < valid_temperature_limits.second) {
       temp += sensor_value;
       valid_aux_sensor_count++;
     }
