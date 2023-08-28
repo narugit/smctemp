@@ -1,3 +1,4 @@
 smctemp
 smctemp.dSYM
 *.o
+.DS_Store
