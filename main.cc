@@ -1,3 +1,4 @@
+#include <charconv>
 #include <iomanip>
 #include <iostream>
 
@@ -11,21 +12,32 @@ void usage(char* prog) {
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
   std::cout << "    -v         : version" << std::endl;
+  std::cout << "    -n         : tries to query the temperature sensors for n times (e.g. -n3)";
+  std::cout << " (1 second interval) until a valid value is returned" << std::endl;
 }
 
 int main(int argc, char *argv[]) {
   int c;
-  extern char   *optarg;
+  unsigned int attempts = 1;
 
   kern_return_t result;
   int           op = smctemp::kOpNone;
   smctemp::UInt32Char_t  key = { 0 };
   smctemp::SmcVal_t      val;
 
-  while ((c = getopt(argc, argv, "clvh")) != -1) {
+  while ((c = getopt(argc, argv, "clvhn:")) != -1) {
     switch(c) {
       case 'c':
         op = smctemp::kOpReadCpuTemp;
+        break;
+      case 'n':
+        if (optarg) {
+          auto [ptr, ec] = std::from_chars(optarg, optarg + strlen(optarg), attempts);
+          if (ec != std::errc()) {
+            std::cerr << "Invalid argument provided for -n (integer is required)" << std::endl;
+            return 1;
+          }
+        }
         break;
       case 'l':
         op = smctemp::kOpList;
@@ -60,7 +72,17 @@ int main(int argc, char *argv[]) {
       }
       break;
     case smctemp::kOpReadCpuTemp:
-      std::cout << std::fixed << std::setprecision(1) << smc_temp.GetCpuTemp();
+      double temp = 0.0;
+      while (attempts > 0) {
+        temp = smc_temp.GetCpuTemp();
+        if (temp > 0.0) {
+          break;
+        } else {
+          usleep(1'000'000);
+          attempts--;
+        }
+      }
+      std::cout << std::fixed << std::setprecision(1) << temp;
       break;
   }
 
