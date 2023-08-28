@@ -29,7 +29,6 @@
 #include <iostream>
 #include <limits>
 #include <string>
-#include <vector>
 
 #include "smctemp_string.h"
 
@@ -37,7 +36,6 @@
 #include <sys/sysctl.h>
 #include <algorithm>
 #include <array>
-#include <utility>
 
 namespace {
 std::string getCPUModel() {
@@ -384,6 +382,24 @@ kern_return_t SmcAccessor::PrintAll() {
   return kIOReturnSuccess;
 }
 
+double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sensors,
+                                     const std::pair<unsigned int, unsigned int>& limits) {
+  double temp = 0.0;
+  size_t valid_sensor_count = 0;
+  for (auto sensor : sensors) {
+    auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
+    if (sensor_value >= limits.first &&
+        sensor_value <= limits.second) {
+      temp += sensor_value;
+      valid_sensor_count++;
+    }
+  }
+  if (valid_sensor_count > 0) {
+    temp /= valid_sensor_count;
+  }
+  return temp;
+}
+
 double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
@@ -459,30 +475,12 @@ double SmcTemp::GetCpuTemp() {
     return temp;
   }
 
-  size_t valid_sensor_count = 0;
-  for (auto sensor : sensors) {
-    auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value >= valid_temperature_limits.first && sensor_value <= valid_temperature_limits.second) {
-      temp += sensor_value;
-      valid_sensor_count++;
-    }
-  }
-  temp /= valid_sensor_count;
+  temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
   if (temp > std::numeric_limits<double>::epsilon()) {
     return temp;
   }
 
-  size_t valid_aux_sensor_count = 0;
-  for (auto sensor : aux_sensors) {
-    auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value > valid_temperature_limits.first && sensor_value < valid_temperature_limits.second) {
-      temp += sensor_value;
-      valid_aux_sensor_count++;
-    }
-  }
-  if (valid_aux_sensor_count > 0) {
-    temp /= valid_aux_sensor_count;
-  }
+  temp += CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
 #endif
   return temp;
 }

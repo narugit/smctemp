@@ -25,6 +25,8 @@
 
 #include <IOKit/IOKitLib.h>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "smctemp_types.h"
 
@@ -92,6 +94,8 @@ class SmcAccessor {
 
 class SmcTemp {
  private:
+  double CalculateAverageTemperature(const std::vector<std::string>& sensors,
+                                     const std::pair<unsigned int, unsigned int>& limits);
   SmcAccessor smc_accessor_;
 
  public:
