@@ -9,6 +9,7 @@ void usage(char* prog) {
   std::cout << "Usage:" << std::endl;
   std::cout << prog << " [options]" << std::endl;
   std::cout << "    -c         : list CPU temperatures (Celsius)" << std::endl;
+  std::cout << "    -g         : list GPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
   std::cout << "    -v         : version" << std::endl;
@@ -25,10 +26,13 @@ int main(int argc, char *argv[]) {
   smctemp::UInt32Char_t  key = { 0 };
   smctemp::SmcVal_t      val;
 
-  while ((c = getopt(argc, argv, "clvhn:")) != -1) {
+  while ((c = getopt(argc, argv, "clvhn:g")) != -1) {
     switch(c) {
       case 'c':
         op = smctemp::kOpReadCpuTemp;
+        break;
+      case 'g':
+        op = smctemp::kOpReadGpuTemp;
         break;
       case 'n':
         if (optarg) {
@@ -71,10 +75,15 @@ int main(int argc, char *argv[]) {
         std::cerr.flags(ef);
       }
       break;
+    case smctemp::kOpReadGpuTemp:
     case smctemp::kOpReadCpuTemp:
       double temp = 0.0;
       while (attempts > 0) {
-        temp = smc_temp.GetCpuTemp();
+        if (op == smctemp::kOpReadCpuTemp) {
+          temp = smc_temp.GetCpuTemp();
+        } else if (op == smctemp::kOpReadGpuTemp) {
+          temp = smc_temp.GetGpuTemp();
+        }
         if (temp > 0.0) {
           break;
         } else {

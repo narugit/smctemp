@@ -485,5 +485,39 @@ double SmcTemp::GetCpuTemp() {
   return temp;
 }
 
+double SmcTemp::GetGpuTemp() {
+  double temp = 0.0;
+#if defined(ARCH_TYPE_X86_64)
+  temp = smc_accessor_.ReadValue(kSensorTg0d);
+  if (0.0 < temp && temp < 110.0) {
+    return temp;
+  }
+  temp = smc_accessor_.ReadValue(kSensorTpcd);
+    if (0.0 < temp && temp < 110.0) {
+    return temp;
+  }
+#elif defined(ARCH_TYPE_ARM64)
+  std::vector<std::string> sensors;
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
+  const std::string cpumodel = getCPUModel();
+  if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L369-L370
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0f));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 2
+  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L354-L357
+    sensors.emplace_back(static_cast<std::string>(kSensorTg05));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 2
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0L));  // GPU 3
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0T));  // GPU 4
+  } else {
+    // not supported
+    return temp;
+  }
+  temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
+#endif
+  return temp;
+}
+
 }
 
