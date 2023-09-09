@@ -109,6 +109,7 @@ class SmcTemp {
  private:
   double CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits);
+  bool IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits);
   SmcAccessor smc_accessor_;
 
  public:

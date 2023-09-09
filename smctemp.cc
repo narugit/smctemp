@@ -382,14 +382,17 @@ kern_return_t SmcAccessor::PrintAll() {
   return kIOReturnSuccess;
 }
 
+bool SmcTemp::IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits) {
+  return temperature > limits.first && temperature < limits.second;
+}
+
 double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits) {
   double temp = 0.0;
   size_t valid_sensor_count = 0;
   for (auto sensor : sensors) {
     auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value >= limits.first &&
-        sensor_value <= limits.second) {
+    if (IsValidTemperature(sensor_value, limits)) {
       temp += sensor_value;
       valid_sensor_count++;
     }
@@ -403,22 +406,23 @@ double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sens
 double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   // The reason why I prefer CPU die temperature to CPU proximity temperature:
   // https://github.com/narugit/smctemp/issues/2
   temp = smc_accessor_.ReadValue(kSensorTc0d);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0e);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0f);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0p);
-  if (temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
@@ -488,12 +492,13 @@ double SmcTemp::GetCpuTemp() {
 double SmcTemp::GetGpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   temp = smc_accessor_.ReadValue(kSensorTg0d);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTpcd);
-    if (0.0 < temp && temp < 110.0) {
+    if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
