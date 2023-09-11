@@ -42,16 +42,22 @@ constexpr uint32_t kKernelIndexSmc = 2;
 constexpr int kOpNone = 0;
 constexpr int kOpList = 1;
 constexpr int kOpReadCpuTemp = 2;
+constexpr int kOpReadGpuTemp = 3;
 
 // List of key and name: 
-// - https://github.com/exelban/stats/blob/0e2e13c626b650ac7743ef620869d2b7857665cd/Modules/Sensors/values.swift
+// - https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift
 // - https://github.com/acidanthera/VirtualSMC/blob/632fec680d996a5dd015afd9acf0ba40f75e69e2/Docs/SMCSensorKeys.txt
 #if defined(ARCH_TYPE_X86_64)
+// CPU
 constexpr UInt32Char_t kSensorTc0d = "TC0D"; // CPU die temperature
 constexpr UInt32Char_t kSensorTc0e = "TC0E"; // CPU PECI die filtered temperature
 constexpr UInt32Char_t kSensorTc0f = "TC0F"; // CPU PECI die temperature filtered then adjusted
 constexpr UInt32Char_t kSensorTc0p = "TC0P"; // CPU proximity temperature
+// GPU
+constexpr UInt32Char_t kSensorTg0d = "TG0D";  // PCH Die Temp
+constexpr UInt32Char_t kSensorTpcd = "TPCD";  // PCH Die Temp (digital)
 #elif defined(ARCH_TYPE_ARM64)
+// CPU
 constexpr UInt32Char_t kSensorTc0a = "Tc0a";
 constexpr UInt32Char_t kSensorTc0b = "Tc0b";
 constexpr UInt32Char_t kSensorTc0x = "Tc0x";
@@ -70,6 +76,13 @@ constexpr UInt32Char_t kSensorTp0j = "Tp0j";
 constexpr UInt32Char_t kSensorTp0r = "Tp0r";
 constexpr UInt32Char_t kSensorTp0f = "Tp0f";
 constexpr UInt32Char_t kSensorTp0n = "Tp0n";
+// GPU
+constexpr UInt32Char_t kSensorTg05 = "Tg05";
+constexpr UInt32Char_t kSensorTg0D = "Tg0D";
+constexpr UInt32Char_t kSensorTg0L = "Tg0L";
+constexpr UInt32Char_t kSensorTg0T = "Tg0T";
+constexpr UInt32Char_t kSensorTg0f = "Tg0f";
+constexpr UInt32Char_t kSensorTg0j = "Tg0j";
 #endif
 
 class SmcAccessor {
@@ -96,12 +109,14 @@ class SmcTemp {
  private:
   double CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits);
+  bool IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits);
   SmcAccessor smc_accessor_;
 
  public:
   SmcTemp() = default;
   ~SmcTemp() = default;
   double GetCpuTemp();
+  double GetGpuTemp();
 };
 
 typedef struct {

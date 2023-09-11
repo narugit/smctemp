@@ -382,14 +382,17 @@ kern_return_t SmcAccessor::PrintAll() {
   return kIOReturnSuccess;
 }
 
+bool SmcTemp::IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits) {
+  return temperature > limits.first && temperature < limits.second;
+}
+
 double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits) {
   double temp = 0.0;
   size_t valid_sensor_count = 0;
   for (auto sensor : sensors) {
     auto sensor_value = smc_accessor_.ReadValue(sensor.c_str());
-    if (sensor_value >= limits.first &&
-        sensor_value <= limits.second) {
+    if (IsValidTemperature(sensor_value, limits)) {
       temp += sensor_value;
       valid_sensor_count++;
     }
@@ -403,22 +406,23 @@ double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sens
 double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   // The reason why I prefer CPU die temperature to CPU proximity temperature:
   // https://github.com/narugit/smctemp/issues/2
   temp = smc_accessor_.ReadValue(kSensorTc0d);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0e);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0f);
-  if (0.0 < temp && temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTc0p);
-  if (temp < 110.0) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
@@ -481,6 +485,41 @@ double SmcTemp::GetCpuTemp() {
   }
 
   temp += CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
+#endif
+  return temp;
+}
+
+double SmcTemp::GetGpuTemp() {
+  double temp = 0.0;
+#if defined(ARCH_TYPE_X86_64)
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
+  temp = smc_accessor_.ReadValue(kSensorTg0d);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    return temp;
+  }
+  temp = smc_accessor_.ReadValue(kSensorTpcd);
+    if (IsValidTemperature(temp, valid_temperature_limits)) {
+    return temp;
+  }
+#elif defined(ARCH_TYPE_ARM64)
+  std::vector<std::string> sensors;
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
+  const std::string cpumodel = getCPUModel();
+  if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L369-L370
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0f));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 2
+  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L354-L357
+    sensors.emplace_back(static_cast<std::string>(kSensorTg05));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 2
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0L));  // GPU 3
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0T));  // GPU 4
+  } else {
+    // not supported
+    return temp;
+  }
+  temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
 #endif
   return temp;
 }
