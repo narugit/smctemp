@@ -1,6 +1,6 @@
-CXX = g++
-CXXFLAGS = -Wall -std=c++17 -g -framework IOKit
-EXES = smctemp
+CXX := g++
+CXXFLAGS := -Wall -std=c++17 -g -framework IOKit
+EXES := smctemp
 STATIC_LIB := libsmctemp.a
 DEST_PREFIX := /usr/local
 AR := ar
@@ -56,6 +56,6 @@ installstaticlib: $(STATIC_LIB)
 	install -m 0644 $(HEADERS) $(DEST_PREFIX)/include
 
 clean:
-	rm -rf $(EXES) smctemp.o smctemp_string.o smctemp.dSYM $(STATIC_LIB)
+	$(RM) -r $(EXES) smctemp.o smctemp_string.o smctemp.dSYM $(STATIC_LIB)
 
 .PHONY: clean
