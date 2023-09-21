@@ -515,6 +515,9 @@ double SmcTemp::GetGpuTemp() {
     sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 2
     sensors.emplace_back(static_cast<std::string>(kSensorTg0L));  // GPU 3
     sensors.emplace_back(static_cast<std::string>(kSensorTg0T));  // GPU 4
+    // ref: runtime detected on a M1 mac mini
+    sensors.emplace_back(static_cast<std::string>(kSensorTg1b));  // GPU 5
+    sensors.emplace_back(static_cast<std::string>(kSensorTg4b));  // GPU 6
   } else {
     // not supported
     return temp;
