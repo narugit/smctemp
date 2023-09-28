@@ -77,6 +77,8 @@ constexpr UInt32Char_t kSensorTp0r = "Tp0r";
 constexpr UInt32Char_t kSensorTp0f = "Tp0f";
 constexpr UInt32Char_t kSensorTp0n = "Tp0n";
 // GPU
+constexpr UInt32Char_t kSensorTg1b = "Tg1b";
+constexpr UInt32Char_t kSensorTg4b = "Tg4b";
 constexpr UInt32Char_t kSensorTg05 = "Tg05";
 constexpr UInt32Char_t kSensorTg0D = "Tg0D";
 constexpr UInt32Char_t kSensorTg0L = "Tg0L";
