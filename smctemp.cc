@@ -484,7 +484,7 @@ double SmcTemp::GetCpuTemp() {
     return temp;
   }
 
-  temp += CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
+  temp = CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
 #endif
   return temp;
 }
