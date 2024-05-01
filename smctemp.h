@@ -49,13 +49,13 @@ constexpr int kOpReadGpuTemp = 3;
 // - https://github.com/acidanthera/VirtualSMC/blob/632fec680d996a5dd015afd9acf0ba40f75e69e2/Docs/SMCSensorKeys.txt
 #if defined(ARCH_TYPE_X86_64)
 // CPU
-constexpr UInt32Char_t kSensorTc0d = "TC0D"; // CPU die temperature
-constexpr UInt32Char_t kSensorTc0e = "TC0E"; // CPU PECI die filtered temperature
-constexpr UInt32Char_t kSensorTc0f = "TC0F"; // CPU PECI die temperature filtered then adjusted
-constexpr UInt32Char_t kSensorTc0p = "TC0P"; // CPU proximity temperature
+constexpr UInt32Char_t kSensorTC0D = "TC0D";  // CPU die temperature
+constexpr UInt32Char_t kSensorTC0E = "TC0E";  // CPU PECI die filtered temperature
+constexpr UInt32Char_t kSensorTC0F = "TC0F";  // CPU PECI die temperature filtered then adjusted
+constexpr UInt32Char_t kSensorTC0P = "TC0P";  // CPU proximity temperature
 // GPU
-constexpr UInt32Char_t kSensorTg0d = "TG0D";  // PCH Die Temp
-constexpr UInt32Char_t kSensorTpcd = "TPCD";  // PCH Die Temp (digital)
+constexpr UInt32Char_t kSensorTG0D = "TG0D";  // PCH Die Temp
+constexpr UInt32Char_t kSensorTPCD = "TPCD";  // PCH Die Temp (digital)
 #elif defined(ARCH_TYPE_ARM64)
 // CPU
 constexpr UInt32Char_t kSensorTc0a = "Tc0a";
@@ -64,31 +64,31 @@ constexpr UInt32Char_t kSensorTc0x = "Tc0x";
 constexpr UInt32Char_t kSensorTc0z = "Tc0z";
 constexpr UInt32Char_t kSensorTp01 = "Tp01";
 constexpr UInt32Char_t kSensorTp05 = "Tp05";
-constexpr UInt32Char_t kSensorTp0d = "Tp0D";
-constexpr UInt32Char_t kSensorTp0h = "Tp0H";
-constexpr UInt32Char_t kSensorTp0l = "Tp0L";
-constexpr UInt32Char_t kSensorTp0p = "Tp0P";
-constexpr UInt32Char_t kSensorTp0x = "Tp0X";
-constexpr UInt32Char_t kSensorTp0b = "Tp0b";
 constexpr UInt32Char_t kSensorTp09 = "Tp09";
-constexpr UInt32Char_t kSensorTp0t = "Tp0T";
-constexpr UInt32Char_t kSensorTp0j = "Tp0j";
-constexpr UInt32Char_t kSensorTp0r = "Tp0r";
+constexpr UInt32Char_t kSensorTp0D = "Tp0D";
+constexpr UInt32Char_t kSensorTp0H = "Tp0H";
+constexpr UInt32Char_t kSensorTp0L = "Tp0L";
+constexpr UInt32Char_t kSensorTp0P = "Tp0P";
+constexpr UInt32Char_t kSensorTp0T = "Tp0T";
+constexpr UInt32Char_t kSensorTp0X = "Tp0X";
+constexpr UInt32Char_t kSensorTp0b = "Tp0b";
 constexpr UInt32Char_t kSensorTp0f = "Tp0f";
+constexpr UInt32Char_t kSensorTp0j = "Tp0j";
 constexpr UInt32Char_t kSensorTp0n = "Tp0n";
+constexpr UInt32Char_t kSensorTp0r = "Tp0r";
 // GPU
-constexpr UInt32Char_t kSensorTg1b = "Tg1b";
-constexpr UInt32Char_t kSensorTg4b = "Tg4b";
 constexpr UInt32Char_t kSensorTg05 = "Tg05";
 constexpr UInt32Char_t kSensorTg0D = "Tg0D";
-constexpr UInt32Char_t kSensorTg0P = "Tg0P";
 constexpr UInt32Char_t kSensorTg0L = "Tg0L";
+constexpr UInt32Char_t kSensorTg0P = "Tg0P";
 constexpr UInt32Char_t kSensorTg0T = "Tg0T";
 constexpr UInt32Char_t kSensorTg0X = "Tg0X";
 constexpr UInt32Char_t kSensorTg0b = "Tg0b";
 constexpr UInt32Char_t kSensorTg0f = "Tg0f";
 constexpr UInt32Char_t kSensorTg0j = "Tg0j";
 constexpr UInt32Char_t kSensorTg0v = "Tg0v";
+constexpr UInt32Char_t kSensorTg1b = "Tg1b";
+constexpr UInt32Char_t kSensorTg4b = "Tg4b";
 #endif
 
 class SmcAccessor {
