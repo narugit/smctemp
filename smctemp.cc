@@ -409,19 +409,19 @@ double SmcTemp::GetCpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   // The reason why I prefer CPU die temperature to CPU proximity temperature:
   // https://github.com/narugit/smctemp/issues/2
-  temp = smc_accessor_.ReadValue(kSensorTc0d);
+  temp = smc_accessor_.ReadValue(kSensorTC0D);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
-  temp = smc_accessor_.ReadValue(kSensorTc0e);
+  temp = smc_accessor_.ReadValue(kSensorTC0E);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
-  temp = smc_accessor_.ReadValue(kSensorTc0f);
+  temp = smc_accessor_.ReadValue(kSensorTC0F);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
-  temp = smc_accessor_.ReadValue(kSensorTc0p);
+  temp = smc_accessor_.ReadValue(kSensorTC0P);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
@@ -443,7 +443,7 @@ double SmcTemp::GetCpuTemp() {
     // CPU core 5
     sensors.emplace_back(static_cast<std::string>(kSensorTp05));
     // CPU core 6
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
     // CPU core 7
     sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
     // CPU core 8
@@ -460,7 +460,7 @@ double SmcTemp::GetCpuTemp() {
     // CPU core 5
     sensors.emplace_back(static_cast<std::string>(kSensorTp05));
     // CPU core 6
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
     // CPU core 7
     sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
     // CPU core 8
@@ -471,21 +471,21 @@ double SmcTemp::GetCpuTemp() {
     // CPU performance core 2 temperature
     sensors.emplace_back(static_cast<std::string>(kSensorTp05));
     // CPU performance core 3 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
     // CPU performance core 4 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0h));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0H));
     // CPU performance core 5 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0l));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0L));
     // CPU performance core 6 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0p));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0P));
     // CPU performance core 7 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0x));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0X));
     // CPU performance core 8 temperature
     sensors.emplace_back(static_cast<std::string>(kSensorTp0b));
     // CPU efficient core 1 temperature
     sensors.emplace_back(static_cast<std::string>(kSensorTp09));
     // CPU efficient core 2 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0t));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0T));
 
     aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0a));
     aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0b));
@@ -510,11 +510,11 @@ double SmcTemp::GetGpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
-  temp = smc_accessor_.ReadValue(kSensorTg0d);
+  temp = smc_accessor_.ReadValue(kSensorTG0D);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
-  temp = smc_accessor_.ReadValue(kSensorTpcd);
+  temp = smc_accessor_.ReadValue(kSensorTPCD);
     if (IsValidTemperature(temp, valid_temperature_limits)) {
     return temp;
   }
