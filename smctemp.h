@@ -81,10 +81,14 @@ constexpr UInt32Char_t kSensorTg1b = "Tg1b";
 constexpr UInt32Char_t kSensorTg4b = "Tg4b";
 constexpr UInt32Char_t kSensorTg05 = "Tg05";
 constexpr UInt32Char_t kSensorTg0D = "Tg0D";
+constexpr UInt32Char_t kSensorTg0P = "Tg0P";
 constexpr UInt32Char_t kSensorTg0L = "Tg0L";
 constexpr UInt32Char_t kSensorTg0T = "Tg0T";
+constexpr UInt32Char_t kSensorTg0X = "Tg0X";
+constexpr UInt32Char_t kSensorTg0b = "Tg0b";
 constexpr UInt32Char_t kSensorTg0f = "Tg0f";
 constexpr UInt32Char_t kSensorTg0j = "Tg0j";
+constexpr UInt32Char_t kSensorTg0v = "Tg0v";
 #endif
 
 class SmcAccessor {
