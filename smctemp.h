@@ -49,10 +49,10 @@ constexpr int kOpReadGpuTemp = 3;
 // - https://github.com/acidanthera/VirtualSMC/blob/632fec680d996a5dd015afd9acf0ba40f75e69e2/Docs/SMCSensorKeys.txt
 #if defined(ARCH_TYPE_X86_64)
 // CPU
-constexpr UInt32Char_t kSensorTC0D = "TC0D"; // CPU die temperature
-constexpr UInt32Char_t kSensorTC0E = "TC0E"; // CPU PECI die filtered temperature
-constexpr UInt32Char_t kSensorTC0F = "TC0F"; // CPU PECI die temperature filtered then adjusted
-constexpr UInt32Char_t kSensorTC0P = "TC0P"; // CPU proximity temperature
+constexpr UInt32Char_t kSensorTC0D = "TC0D";  // CPU die temperature
+constexpr UInt32Char_t kSensorTC0E = "TC0E";  // CPU PECI die filtered temperature
+constexpr UInt32Char_t kSensorTC0F = "TC0F";  // CPU PECI die temperature filtered then adjusted
+constexpr UInt32Char_t kSensorTC0P = "TC0P";  // CPU proximity temperature
 // GPU
 constexpr UInt32Char_t kSensorTG0D = "TG0D";  // PCH Die Temp
 constexpr UInt32Char_t kSensorTPCD = "TPCD";  // PCH Die Temp (digital)
