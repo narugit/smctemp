@@ -23,8 +23,6 @@ int main(int argc, char *argv[]) {
 
   kern_return_t result;
   int           op = smctemp::kOpNone;
-  smctemp::UInt32Char_t  key = { 0 };
-  smctemp::SmcVal_t      val;
 
   while ((c = getopt(argc, argv, "clvhn:g")) != -1) {
     switch(c) {
@@ -91,7 +89,7 @@ int main(int argc, char *argv[]) {
           attempts--;
         }
       }
-      std::cout << std::fixed << std::setprecision(1) << temp;
+      std::cout << std::fixed << std::setprecision(1) << temp << std::endl;
       break;
   }
 

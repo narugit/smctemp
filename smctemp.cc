@@ -77,7 +77,7 @@ void printFP(SmcVal_t val, int n, float m) {
 void printUInt(SmcVal_t val) {
   char* bytes = (char *)val.bytes;
   uint64_t data = 0;
-  for (int i = 0; i < val.dataSize; i++) {
+  for (uint32_t i = 0; i < val.dataSize; i++) {
     data += uint8_t(bytes[i]) * std::pow(256, val.dataSize - 1 -i);
   }
   std::cout << data;
@@ -112,10 +112,10 @@ void printPWM(SmcVal_t val) {
 
 void printBytesHex(SmcVal_t val) {
   std::cout << " (bytes:";
-  for (int i = 0; i < val.dataSize; i++) {
+  for (uint32_t i = 0; i < val.dataSize; i++) {
     std::ios_base::fmtflags f(std::cout.flags());
-    std::cout << " " << std::setw(2) 
-      << std::uppercase<< std::hex << std::setfill('0') 
+    std::cout << " " << std::setw(2)
+      << std::uppercase<< std::hex << std::setfill('0')
       << static_cast<unsigned int>(val.bytes[i]);
     std::cout.flags(f);
   }
@@ -171,7 +171,7 @@ kern_return_t SmcAccessor::Open() {
     std::cerr.flags(ef);
     return result;
   }
-    
+
   result = IOServiceOpen(device, mach_task_self(), 0, &conn_);
   IOObjectRelease(device);
   if (result != kIOReturnSuccess) {
@@ -193,7 +193,7 @@ kern_return_t SmcAccessor::Call(int index, SmcKeyData_t *inputStructure, SmcKeyD
   size_t   structureOutputSize;
   structureInputSize = sizeof(SmcKeyData_t);
   structureOutputSize = sizeof(SmcKeyData_t);
-    
+
   return IOConnectCallStructMethod(conn_, index, inputStructure, structureInputSize, outputStructure, &structureOutputSize);
 }
 kern_return_t SmcCall2(int index, SmcKeyData_t *inputStructure, SmcKeyData_t *outputStructure,io_connect_t conn) {
@@ -201,7 +201,7 @@ kern_return_t SmcCall2(int index, SmcKeyData_t *inputStructure, SmcKeyData_t *ou
   size_t   structureOutputSize;
   structureInputSize = sizeof(SmcKeyData_t);
   structureOutputSize = sizeof(SmcKeyData_t);
-    
+
   return IOConnectCallStructMethod(conn, index, inputStructure, structureInputSize, outputStructure, &structureOutputSize);
 }
 
@@ -210,7 +210,7 @@ kern_return_t SmcAccessor::GetKeyInfo(const uint32_t key, SmcKeyData_keyInfo_t& 
   SmcKeyData_t inputStructure;
   SmcKeyData_t outputStructure;
   kern_return_t result = kIOReturnSuccess;
-    
+
   OSSpinLockLock(&g_keyInfoSpinLock);
   int i = 0;
   for (i = 0; i < g_keyInfoCacheCount; ++i) {
@@ -219,15 +219,15 @@ kern_return_t SmcAccessor::GetKeyInfo(const uint32_t key, SmcKeyData_keyInfo_t& 
       break;
     }
   }
-    
+
   if (i == g_keyInfoCacheCount) {
     // Not in cache, must look it up.
     memset(&inputStructure, 0, sizeof(inputStructure));
     memset(&outputStructure, 0, sizeof(outputStructure));
-        
+
     inputStructure.key = key;
     inputStructure.data8 = kSmcCmdReadKeyInfo;
-        
+
     result = Call(kKernelIndexSmc, &inputStructure, &outputStructure);
     if (result == kIOReturnSuccess) {
       key_info = outputStructure.keyInfo;
@@ -238,9 +238,9 @@ kern_return_t SmcAccessor::GetKeyInfo(const uint32_t key, SmcKeyData_keyInfo_t& 
       }
     }
   }
-    
+
   OSSpinLockUnlock(&g_keyInfoSpinLock);
-    
+
   return result;
 }
 
@@ -255,7 +255,7 @@ double SmcAccessor::ReadValue(const UInt32Char_t key) {
       std::string(val.dataType) == kDataTypeUi64) {
     char* bytes = (char *)val.bytes;
     uint64_t tmp = 0;
-    for (int i = 0; i < val.dataSize; i++) {
+    for (uint32_t i = 0; i < val.dataSize; i++) {
       tmp += uint8_t(bytes[i]) * std::pow(256, val.dataSize - 1 -i);
     }
     v = tmp;
@@ -317,37 +317,37 @@ kern_return_t SmcAccessor::ReadSmcVal(const UInt32Char_t key, SmcVal_t& val) {
   kern_return_t result;
   SmcKeyData_t  inputStructure;
   SmcKeyData_t  outputStructure;
-    
+
   memset(&inputStructure, 0, sizeof(SmcKeyData_t));
   memset(&outputStructure, 0, sizeof(SmcKeyData_t));
   memset(&val, 0, sizeof(SmcVal_t));
 
   inputStructure.key = string_util::strtoul(key, 4, 16);
-  sprintf(val.key, key);
-    
+  snprintf(val.key, sizeof(val.key), key);
+
   result = GetKeyInfo(inputStructure.key, outputStructure.keyInfo);
   if (result != kIOReturnSuccess) {
     return result;
   }
-    
+
   val.dataSize = outputStructure.keyInfo.dataSize;
-  string_util::ultostr(val.dataType, outputStructure.keyInfo.dataType);
+  string_util::ultostr(val.dataType, 5, outputStructure.keyInfo.dataType);
   inputStructure.keyInfo.dataSize = val.dataSize;
   inputStructure.data8 = kSmcCmdReadBytes;
-  
+
   result = SmcCall2(kKernelIndexSmc, &inputStructure, &outputStructure, conn_);
   if (result != kIOReturnSuccess) {
     return result;
   }
-    
+
   memcpy(val.bytes, outputStructure.bytes, sizeof(outputStructure.bytes));
-    
+
   return kIOReturnSuccess;
 }
 
 uint32_t SmcAccessor::ReadIndexCount() {
   SmcVal_t val;
-    
+
   ReadSmcVal("#KEY", val);
   return string_util::strtoul((const char *)val.bytes, val.dataSize, 10);
 }
@@ -356,29 +356,29 @@ kern_return_t SmcAccessor::PrintAll() {
   kern_return_t result;
   SmcKeyData_t  inputStructure;
   SmcKeyData_t  outputStructure;
-    
+
   int           totalKeys, i;
   UInt32Char_t  key;
   SmcVal_t      val;
-    
+
   totalKeys = ReadIndexCount();
   for (i = 0; i < totalKeys; i++) {
     memset(&inputStructure, 0, sizeof(SmcKeyData_t));
     memset(&outputStructure, 0, sizeof(SmcKeyData_t));
     memset(&val, 0, sizeof(SmcVal_t));
-    
+
     inputStructure.data8 = kSmcCmdReadIndex;
     inputStructure.data32 = i;
-    
+
     result = Call(kKernelIndexSmc, &inputStructure, &outputStructure);
     if (result != kIOReturnSuccess)
         continue;
-    
-    string_util::ultostr(key, outputStructure.key);
+
+    string_util::ultostr(key, 5, outputStructure.key);
     ReadSmcVal(key, val);
     PrintSmcVal(val);
   }
-    
+
   return kIOReturnSuccess;
 }
 
