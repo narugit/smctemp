@@ -15,9 +15,9 @@ uint32_t strtoul(const char* str, int size, int base) {
   return total;
 }
 
-void ultostr(char *str, uint32_t val) {
+void ultostr(char* str, size_t strlen, uint32_t val) {
   str[0] = '\0';
-  sprintf(str, "%c%c%c%c",
+  snprintf(str, strlen, "%c%c%c%c",
           (unsigned int) val >> 24,
           (unsigned int) val >> 16,
           (unsigned int) val >> 8,
