@@ -22,7 +22,7 @@ $ smctemp -c
 ## Usage 
 ```console
 $ smctemp -h
-Check Temperature by using Apple System Management Control (Smc) tool 0.3.1
+Check Temperature by using Apple System Management Control (Smc) tool 0.3.2
 Usage:
 ./smctemp [options]
     -c         : list CPU temperatures (Celsius)
