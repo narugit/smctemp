@@ -449,6 +449,12 @@ double SmcTemp::GetCpuTemp() {
     // CPU core 8
     sensors.emplace_back(static_cast<std::string>(kSensorTp0r));
   } else if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // CPU efficient cores 1 through 4 on M2 Max 12 Core Chip
+    sensors.emplace_back(static_cast<std::string>(kSensorTp1h));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp1t));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp1p));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp1l));
+
     // CPU core 1
     sensors.emplace_back(static_cast<std::string>(kSensorTp01));
     // CPU core 2
