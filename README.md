@@ -28,10 +28,11 @@ Usage:
     -c         : list CPU temperatures (Celsius)
     -g         : list GPU temperatures (Celsius)
     -h         : help
+    -i         : set interval in milliseconds (e.g. -i25, valid range is 20-1000, default: 1000)
     -l         : list all keys and values
     -f         : fail-soft mode. Shows last valid value if current sensor read fails.
     -v         : version
-    -n         : tries to query the temperature sensors for n times (e.g. -n3) (1 second interval) until a valid value is returned
+    -n         : tries to query the temperature sensors for n times (e.g. -n3) until a valid value is returned
 
 $ smctemp -c
 64.2
@@ -39,3 +40,13 @@ $ smctemp -c
 $ smctemp -g
 36.2
 ```
+
+## Note for M2 Mac Users
+On M2 Macs, sensor values may be unstable as described in the following issue:
+- https://github.com/narugit/smctemp/pull/14
+- https://github.com/narugit/smctemp/issues/32
+
+For M2 Macs, using the `-n`, `-i`, and `-f` options can help obtain more stable sensor values.
+Try tuning these options to get better results.
+
+The recommended settings are `-i25 -n40 -f` (See also https://github.com/narugit/smctemp/issues/32#issuecomment-2287304793).

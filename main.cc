@@ -11,6 +11,8 @@ void usage(char* prog) {
   std::cout << "    -c         : list CPU temperatures (Celsius)" << std::endl;
   std::cout << "    -g         : list GPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
+  std::cout << "    -i         : set interval in milliseconds (e.g. -i25, valid range is 20-1000, default: 1000)"
+    << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
   std::cout << "    -f         : fail-soft mode. Shows last valid value if current sensor read fails." << std::endl;
   std::cout << "    -v         : version" << std::endl;
@@ -21,18 +23,30 @@ void usage(char* prog) {
 int main(int argc, char *argv[]) {
   int c;
   unsigned int attempts = 1;
+  unsigned int interval_ms = 1'000;
 
   kern_return_t result;
   int op = smctemp::kOpNone;
   bool isFailSoft = false;
 
-  while ((c = getopt(argc, argv, "clvfhn:g")) != -1) {
+  while ((c = getopt(argc, argv, "clvfhn:gi:")) != -1) {
     switch(c) {
       case 'c':
         op = smctemp::kOpReadCpuTemp;
         break;
       case 'g':
         op = smctemp::kOpReadGpuTemp;
+        break;
+      case 'i':
+        if (optarg) {
+          unsigned int temp_interval;
+          auto [ptr, ec] = std::from_chars(optarg, optarg + strlen(optarg), temp_interval);
+          if (ec != std::errc() || temp_interval < 20 || temp_interval > 1000) {
+            std::cerr << "Invalid argument provided for -i (integer between 20 and 1000 is required)" << std::endl;
+            return 1;
+          }
+          interval_ms = temp_interval;
+        }
         break;
       case 'n':
         if (optarg) {
@@ -91,7 +105,7 @@ int main(int argc, char *argv[]) {
         if (smc_temp.IsValidTemperature(temp, valid_temperature_limits)) {
           break;
         } else {
-          usleep(1'000'000);
+          usleep(interval_ms * 1'000);
           attempts--;
         }
       }
@@ -105,6 +119,11 @@ int main(int argc, char *argv[]) {
         }
       }
       std::cout << std::fixed << std::setprecision(1) << temp << std::endl;
+      if (temp == 0.0) {
+        std::cerr << "Could not get valid sensor value. Please use `-n` option and `-i` option." << std::endl;
+        std::cerr << "In M2 Mac, it would be work fine with `-i25 -n40 -f` options.`" << std::endl;
+        return 1;
+      }
       break;
   }
 
