@@ -12,6 +12,7 @@ void usage(char* prog) {
   std::cout << "    -g         : list GPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
+  std::cout << "    -f         : fail-soft mode to store recent valid sensor value" << std::endl;
   std::cout << "    -v         : version" << std::endl;
   std::cout << "    -n         : tries to query the temperature sensors for n times (e.g. -n3)";
   std::cout << " (1 second interval) until a valid value is returned" << std::endl;
@@ -22,9 +23,10 @@ int main(int argc, char *argv[]) {
   unsigned int attempts = 1;
 
   kern_return_t result;
-  int           op = smctemp::kOpNone;
+  int op = smctemp::kOpNone;
+  bool isFailSoft = false;
 
-  while ((c = getopt(argc, argv, "clvhn:g")) != -1) {
+  while ((c = getopt(argc, argv, "clvfhn:g")) != -1) {
     switch(c) {
       case 'c':
         op = smctemp::kOpReadCpuTemp;
@@ -44,6 +46,9 @@ int main(int argc, char *argv[]) {
       case 'l':
         op = smctemp::kOpList;
         break;
+      case 'f':
+        isFailSoft = true;
+        break;
       case 'v':
         std::cout << smctemp::kVersion << std::endl;
         return 0;
@@ -61,7 +66,7 @@ int main(int argc, char *argv[]) {
   }
 
   smctemp::SmcAccessor smc_accessor = smctemp::SmcAccessor();
-  smctemp::SmcTemp smc_temp = smctemp::SmcTemp();
+  smctemp::SmcTemp smc_temp = smctemp::SmcTemp(isFailSoft);
 
   switch(op) {
     case smctemp::kOpList:
@@ -76,17 +81,27 @@ int main(int argc, char *argv[]) {
     case smctemp::kOpReadGpuTemp:
     case smctemp::kOpReadCpuTemp:
       double temp = 0.0;
+      const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
       while (attempts > 0) {
         if (op == smctemp::kOpReadCpuTemp) {
           temp = smc_temp.GetCpuTemp();
         } else if (op == smctemp::kOpReadGpuTemp) {
           temp = smc_temp.GetGpuTemp();
         }
-        if (temp > 0.0) {
+        if (smc_temp.IsValidTemperature(temp, valid_temperature_limits)) {
           break;
         } else {
           usleep(1'000'000);
           attempts--;
+        }
+      }
+      if (isFailSoft) {
+        if (!smc_temp.IsValidTemperature(temp, valid_temperature_limits)) {
+          if (op == smctemp::kOpReadCpuTemp) {
+            temp = smc_temp.GetLastValidCpuTemp();
+          } else if (op == smctemp::kOpReadGpuTemp) {
+            temp = smc_temp.GetLastValidGpuTemp();
+          }
         }
       }
       std::cout << std::fixed << std::setprecision(1) << temp << std::endl;

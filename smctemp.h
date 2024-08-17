@@ -119,14 +119,21 @@ class SmcTemp {
  private:
   double CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits);
-  bool IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits);
+  bool StoreValidTemperature(double temperature, std::string file_name);
   SmcAccessor smc_accessor_;
+  bool is_fail_soft_;
+  const std::string storage_path_ = "/tmp/smctemp/";
+  const std::string cpu_file_ = "cpu_temperature.txt";
+  const std::string gpu_file_ = "gpu_temperature.txt";
 
  public:
-  SmcTemp() = default;
+  explicit SmcTemp(bool isFailSoft);
   ~SmcTemp() = default;
   double GetCpuTemp();
   double GetGpuTemp();
+  double GetLastValidCpuTemp();
+  double GetLastValidGpuTemp();
+  bool IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits);
 };
 
 typedef struct {
