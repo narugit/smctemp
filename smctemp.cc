@@ -24,7 +24,11 @@
 
 #include <IOKit/IOKitLib.h>
 #include <libkern/OSAtomic.h>
+#include <sys/stat.h>
+
+#include <cerrno>
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -382,8 +386,34 @@ kern_return_t SmcAccessor::PrintAll() {
   return kIOReturnSuccess;
 }
 
+SmcTemp::SmcTemp(bool isFailSoft)
+    : is_fail_soft_(isFailSoft) {
+  if (is_fail_soft_) {
+    if (mkdir(storage_path_.c_str(), 0777) && errno != EEXIST) {
+      std::cerr << "Failed to create directory: " << storage_path_ << std::endl;
+    }
+  }
+}
+
 bool SmcTemp::IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits) {
   return temperature > limits.first && temperature < limits.second;
+}
+
+bool SmcTemp::StoreValidTemperature(double temperature, std::string file_name) {
+  if (!is_fail_soft_) {
+    return false;
+  }
+  std::ofstream out_file(storage_path_ + file_name);
+
+  if (!out_file) {
+    std::cerr << "Failed to open the file: " << storage_path_ + file_name << std::endl;
+    return false;
+  }
+
+  out_file << temperature;
+  out_file.close();
+
+  return true;
 }
 
 double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sensors,
@@ -411,18 +441,22 @@ double SmcTemp::GetCpuTemp() {
   // https://github.com/narugit/smctemp/issues/2
   temp = smc_accessor_.ReadValue(kSensorTC0D);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, cpu_file_);
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTC0E);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, cpu_file_);
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTC0F);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, cpu_file_);
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTC0P);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, cpu_file_);
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
@@ -504,11 +538,18 @@ double SmcTemp::GetCpuTemp() {
 
   temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
   if (temp > std::numeric_limits<double>::epsilon()) {
+    if (IsValidTemperature(temp, valid_temperature_limits)) {
+      StoreValidTemperature(temp, cpu_file_);
+    }
     return temp;
   }
 
   temp = CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, cpu_file_);
+  }
 #endif
+
   return temp;
 }
 
@@ -518,10 +559,12 @@ double SmcTemp::GetGpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   temp = smc_accessor_.ReadValue(kSensorTG0D);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, gpu_file_);
     return temp;
   }
   temp = smc_accessor_.ReadValue(kSensorTPCD);
-    if (IsValidTemperature(temp, valid_temperature_limits)) {
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, gpu_file_);
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
@@ -553,9 +596,45 @@ double SmcTemp::GetGpuTemp() {
     return temp;
   }
   temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    StoreValidTemperature(temp, gpu_file_);
+  }
 #endif
   return temp;
 }
 
+double SmcTemp::GetLastValidCpuTemp() {
+  std::string file_path = storage_path_ + cpu_file_;
+  std::ifstream file(file_path);
+  if (!file.is_open()) {
+    std::cerr << "Failed to open the file: " << file_path << std::endl;
+  }
+
+  double value;
+  file >> value;
+
+  if (file.fail()) {
+    std::cerr << "Failed to read sensor value from file: " + file_path << std::endl;
+  }
+
+  return value;
+}
+
+double SmcTemp::GetLastValidGpuTemp() {
+  std::string file_path = storage_path_ + gpu_file_;
+  std::ifstream file(file_path);
+  if (!file.is_open()) {
+    std::cerr << "Failed to open the file: " << file_path << std::endl;
+  }
+
+  double value;
+  file >> value;
+
+  if (file.fail()) {
+    std::cerr << "Failed to read sensor value from file: " + file_path << std::endl;
+  }
+
+  return value;
+}
 }
 
