@@ -22,7 +22,7 @@ jobs:
 
       - name: Audit version
         run: |
-          expect_version=$(sed -n 's/.*kVersion = "\(.*\)";/\1/p' smctemp.h)
+          expect_version=$(sed -n 's/.*kVersion\[\] = "\(.*\)";/\1/p' smctemp.h)
           input_version=${{ github.event.inputs.version }}
           if [[ "$expect_version" != "$input_version" ]]; then
             echo "ERROR: Version is mismatched. Expected version: $expect_version"
