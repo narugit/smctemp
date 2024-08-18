@@ -29,7 +29,7 @@ Usage:
     -g         : list GPU temperatures (Celsius)
     -h         : help
     -l         : list all keys and values
-    -f         : fail-soft mode to store recent valid sensor value
+    -f         : fail-soft mode. Shows last valid value if current sensor read fails.
     -v         : version
     -n         : tries to query the temperature sensors for n times (e.g. -n3) (1 second interval) until a valid value is returned
 

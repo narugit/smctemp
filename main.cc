@@ -12,7 +12,7 @@ void usage(char* prog) {
   std::cout << "    -g         : list GPU temperatures (Celsius)" << std::endl;
   std::cout << "    -h         : help" << std::endl;
   std::cout << "    -l         : list all keys and values" << std::endl;
-  std::cout << "    -f         : fail-soft mode to store recent valid sensor value" << std::endl;
+  std::cout << "    -f         : fail-soft mode. Shows last valid value if current sensor read fails." << std::endl;
   std::cout << "    -v         : version" << std::endl;
   std::cout << "    -n         : tries to query the temperature sensors for n times (e.g. -n3)";
   std::cout << " (1 second interval) until a valid value is returned" << std::endl;
