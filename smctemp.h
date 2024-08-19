@@ -33,7 +33,7 @@
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
 namespace smctemp {
-const char kVersion[] = "0.4.0";
+const char kVersion[] = "0.5.0";
 constexpr char kIOAppleSmcHiddenClassName[] = "AppleSMC";
 constexpr char kSmcCmdReadBytes = 5;
 constexpr char kSmcCmdReadIndex = 8;
