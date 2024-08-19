@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
       std::cout << std::fixed << std::setprecision(1) << temp << std::endl;
       if (temp == 0.0) {
         std::cerr << "Could not get valid sensor value. Please use `-n` option and `-i` option." << std::endl;
-        std::cerr << "In M2 Mac, it would be work fine with `-i25 -n40 -f` options.`" << std::endl;
+        std::cerr << "In M2 Mac, it would be work fine with `-i25 -n180 -f` options.`" << std::endl;
         return 1;
       }
       break;

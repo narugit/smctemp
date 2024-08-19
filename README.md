@@ -49,4 +49,4 @@ On M2 Macs, sensor values may be unstable as described in the following issue:
 For M2 Macs, using the `-n`, `-i`, and `-f` options can help obtain more stable sensor values.
 Try tuning these options to get better results.
 
-The recommended settings are `-i25 -n40 -f` (See also https://github.com/narugit/smctemp/issues/32#issuecomment-2287304793).
+The recommended settings are `-i25 -n180 -f` (See also https://github.com/narugit/smctemp/pull/34/files#r1721025001)
