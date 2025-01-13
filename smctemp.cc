@@ -465,7 +465,7 @@ double SmcTemp::GetCpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
 
   const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m3") != std::string::npos) {  // Apple M2
+  if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
     // CPU core 1
     sensors.emplace_back(static_cast<std::string>(kSensorTp01));
     // CPU core 2
