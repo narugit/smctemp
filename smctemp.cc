@@ -465,7 +465,13 @@ double SmcTemp::GetCpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
 
   const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m3") != std::string::npos) {  // Apple M2
+  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
+  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
     // CPU core 1
     sensors.emplace_back(static_cast<std::string>(kSensorTp01));
     // CPU core 2
@@ -571,7 +577,12 @@ double SmcTemp::GetGpuTemp() {
   std::vector<std::string> sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
   const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
+  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0P));  // GPU 2
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 3
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 4
+  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
     sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 1
     sensors.emplace_back(static_cast<std::string>(kSensorTg0P));  // GPU 2
     sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 3
