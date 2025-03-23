@@ -43,6 +43,8 @@ constexpr int kOpNone = 0;
 constexpr int kOpList = 1;
 constexpr int kOpReadCpuTemp = 2;
 constexpr int kOpReadGpuTemp = 3;
+constexpr int kOpReadIndividualCpuTemp = 4;
+constexpr int kOpReadIndividualGpuTemp = 5;
 
 // List of key and name: 
 // - https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift
@@ -120,6 +122,10 @@ class SmcTemp {
   double CalculateAverageTemperature(const std::vector<std::string>& sensors,
                                      const std::pair<unsigned int, unsigned int>& limits);
   bool StoreValidTemperature(double temperature, std::string file_name);
+  // Get labeled CPU core sensors for the current CPU model
+  std::vector<std::pair<std::string, std::string>> GetCpuCoreSensors();
+  // Get labeled GPU core sensors for the current CPU model
+  std::vector<std::pair<std::string, std::string>> GetGpuCoreSensors();
   SmcAccessor smc_accessor_;
   bool is_fail_soft_;
   const std::string storage_path_ = "/tmp/smctemp/";
@@ -134,6 +140,10 @@ class SmcTemp {
   double GetLastValidCpuTemp();
   double GetLastValidGpuTemp();
   bool IsValidTemperature(double temperature, const std::pair<unsigned int, unsigned int>& limits);
+  
+  // Individual core temperatures
+  std::vector<std::pair<std::string, double>> GetIndividualCpuTemps();
+  std::vector<std::pair<std::string, double>> GetIndividualGpuTemps();
 };
 
 typedef struct {
