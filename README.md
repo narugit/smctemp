@@ -34,6 +34,8 @@ Usage:
 ./smctemp [options]
     -c         : list CPU temperatures (Celsius)
     -g         : list GPU temperatures (Celsius)
+    -C         : list individual CPU core temperatures (Celsius)
+    -G         : list individual GPU core temperatures (Celsius)
     -h         : help
     -i         : set interval in milliseconds (e.g. -i25, valid range is 20-1000, default: 1000)
     -l         : list all keys and values
@@ -46,6 +48,14 @@ $ smctemp -c
 
 $ smctemp -g
 36.2
+
+$ smctemp -C
+P-Core 1: 62.4°C
+P-Core 2: 63.8°C
+P-Core 3: 65.2°C
+P-Core 4: 64.8°C
+E-Core 1: 58.6°C
+E-Core 2: 59.1°C
 ```
 
 ## Note for M2 Mac Users

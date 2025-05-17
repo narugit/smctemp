@@ -433,7 +433,109 @@ double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sens
   return temp;
 }
 
-double SmcTemp::GetCpuTemp() {
+// Get labeled CPU core sensors for the current CPU model
+std::vector<std::pair<std::string, std::string>> SmcTemp::GetCpuCoreSensors() {
+  std::vector<std::pair<std::string, std::string>> labeled_sensors;
+  std::vector<std::pair<std::string, std::string>> aux_labeled_sensors;
+
+  const std::string cpumodel = getCPUModel();
+  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+    labeled_sensors.emplace_back(std::string("CPU Sensor Tp01"), std::string(kSensorTp01));
+    labeled_sensors.emplace_back(std::string("CPU Sensor Tp09"), std::string(kSensorTp09));
+    labeled_sensors.emplace_back(std::string("CPU Sensor Tp0f"), std::string(kSensorTp0f));
+    labeled_sensors.emplace_back(std::string("CPU Sensor Tp05"), std::string(kSensorTp05));
+    labeled_sensors.emplace_back(std::string("CPU Sensor Tp0D"), std::string(kSensorTp0D));
+  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
+    labeled_sensors.emplace_back(std::string("CPU Core 1"), std::string(kSensorTp01));
+    labeled_sensors.emplace_back(std::string("CPU Core 2"), std::string(kSensorTp09));
+    labeled_sensors.emplace_back(std::string("CPU Core 3"), std::string(kSensorTp0f));
+    labeled_sensors.emplace_back(std::string("CPU Core 4"), std::string(kSensorTp0n));
+    labeled_sensors.emplace_back(std::string("CPU Core 5"), std::string(kSensorTp05));
+    labeled_sensors.emplace_back(std::string("CPU Core 6"), std::string(kSensorTp0D));
+    labeled_sensors.emplace_back(std::string("CPU Core 7"), std::string(kSensorTp0j));
+    labeled_sensors.emplace_back(std::string("CPU Core 8"), std::string(kSensorTp0r));
+  } else if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // Efficiency cores (1 through 4 on M2 Max 12 Core Chip)
+    labeled_sensors.emplace_back(std::string("E-Core 1"), std::string(kSensorTp1h));
+    labeled_sensors.emplace_back(std::string("E-Core 2"), std::string(kSensorTp1t));
+    labeled_sensors.emplace_back(std::string("E-Core 3"), std::string(kSensorTp1p));
+    labeled_sensors.emplace_back(std::string("E-Core 4"), std::string(kSensorTp1l));
+
+    // Performance cores
+    labeled_sensors.emplace_back(std::string("P-Core 1"), std::string(kSensorTp01));
+    labeled_sensors.emplace_back(std::string("P-Core 2"), std::string(kSensorTp09));
+    labeled_sensors.emplace_back(std::string("P-Core 3"), std::string(kSensorTp0f));
+    labeled_sensors.emplace_back(std::string("P-Core 4"), std::string(kSensorTp0n));
+    labeled_sensors.emplace_back(std::string("P-Core 5"), std::string(kSensorTp05));
+    labeled_sensors.emplace_back(std::string("P-Core 6"), std::string(kSensorTp0D));
+    labeled_sensors.emplace_back(std::string("P-Core 7"), std::string(kSensorTp0j));
+    labeled_sensors.emplace_back(std::string("P-Core 8"), std::string(kSensorTp0r));
+  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
+    // Efficiency cores
+    labeled_sensors.emplace_back(std::string("E-Core 1"), std::string(kSensorTp09));
+    labeled_sensors.emplace_back(std::string("E-Core 2"), std::string(kSensorTp0T));
+
+    // Performance cores
+    labeled_sensors.emplace_back(std::string("P-Core 1"), std::string(kSensorTp01));
+    labeled_sensors.emplace_back(std::string("P-Core 2"), std::string(kSensorTp05));
+    labeled_sensors.emplace_back(std::string("P-Core 3"), std::string(kSensorTp0D));
+    labeled_sensors.emplace_back(std::string("P-Core 4"), std::string(kSensorTp0H));
+    labeled_sensors.emplace_back(std::string("P-Core 5"), std::string(kSensorTp0L));
+    labeled_sensors.emplace_back(std::string("P-Core 6"), std::string(kSensorTp0P));
+    labeled_sensors.emplace_back(std::string("P-Core 7"), std::string(kSensorTp0X));
+    labeled_sensors.emplace_back(std::string("P-Core 8"), std::string(kSensorTp0b));
+
+    // Only use these if we don't get valid readings from the more specific sensors
+    aux_labeled_sensors.emplace_back(std::string("CPU Aux 1"), std::string(kSensorTc0a));
+    aux_labeled_sensors.emplace_back(std::string("CPU Aux 2"), std::string(kSensorTc0b));
+    aux_labeled_sensors.emplace_back(std::string("CPU Aux 3"), std::string(kSensorTc0x));
+    aux_labeled_sensors.emplace_back(std::string("CPU Aux 4"), std::string(kSensorTc0z));
+  }
+
+  // If we didn't get any sensors, try the aux sensors
+  if (labeled_sensors.empty() && !aux_labeled_sensors.empty()) {
+    return aux_labeled_sensors;
+  }
+
+  return labeled_sensors;
+}
+
+// Get labeled GPU core sensors for the current CPU model
+std::vector<std::pair<std::string, std::string>> smctemp::SmcTemp::GetGpuCoreSensors() {
+  std::vector<std::pair<std::string, std::string>> labeled_sensors;
+
+  const std::string cpumodel = getCPUModel();
+  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+    labeled_sensors.emplace_back(std::string("GPU 1"), std::string(kSensorTg0D));
+    labeled_sensors.emplace_back(std::string("GPU 2"), std::string(kSensorTg0P));
+    labeled_sensors.emplace_back(std::string("GPU 3"), std::string(kSensorTg0X));
+    labeled_sensors.emplace_back(std::string("GPU 4"), std::string(kSensorTg0j));
+  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
+    labeled_sensors.emplace_back(std::string("GPU 1"), std::string(kSensorTg0D));
+    labeled_sensors.emplace_back(std::string("GPU 2"), std::string(kSensorTg0P));
+    labeled_sensors.emplace_back(std::string("GPU 3"), std::string(kSensorTg0X));
+    labeled_sensors.emplace_back(std::string("GPU 4"), std::string(kSensorTg0b));
+    labeled_sensors.emplace_back(std::string("GPU 5"), std::string(kSensorTg0j));
+    labeled_sensors.emplace_back(std::string("GPU 6"), std::string(kSensorTg0v));
+  } else if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L369-L370
+    labeled_sensors.emplace_back(std::string("GPU 1"), std::string(kSensorTg0f));
+    labeled_sensors.emplace_back(std::string("GPU 2"), std::string(kSensorTg0j));
+  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
+    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L354-L357
+    labeled_sensors.emplace_back(std::string("GPU 1"), std::string(kSensorTg05));
+    labeled_sensors.emplace_back(std::string("GPU 2"), std::string(kSensorTg0D));
+    labeled_sensors.emplace_back(std::string("GPU 3"), std::string(kSensorTg0L));
+    labeled_sensors.emplace_back(std::string("GPU 4"), std::string(kSensorTg0T));
+    // ref: runtime detected on a M1 mac mini
+    labeled_sensors.emplace_back(std::string("GPU 5"), std::string(kSensorTg1b));
+    labeled_sensors.emplace_back(std::string("GPU 6"), std::string(kSensorTg4b));
+  }
+
+  return labeled_sensors;
+}
+
+double smctemp::SmcTemp::GetCpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
@@ -460,98 +562,22 @@ double SmcTemp::GetCpuTemp() {
     return temp;
   }
 #elif defined(ARCH_TYPE_ARM64)
-  std::vector<std::string> sensors;
-  std::vector<std::string> aux_sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
+  std::vector<std::string> sensors;
+  
+  // Get the labeled sensors and extract just the keys for averaging
+  auto labeled_sensors = GetCpuCoreSensors();
+  for (const auto& sensor : labeled_sensors) {
+    sensors.push_back(sensor.second);
+  }
 
-  const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
-    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
-  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
-    // CPU core 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
-    // CPU core 2
-    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
-    // CPU core 3
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
-    // CPU core 4
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0n));
-    // CPU core 5
-    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
-    // CPU core 6
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
-    // CPU core 7
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
-    // CPU core 8
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0r));
-  } else if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
-    // CPU efficient cores 1 through 4 on M2 Max 12 Core Chip
-    sensors.emplace_back(static_cast<std::string>(kSensorTp1h));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp1t));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp1p));
-    sensors.emplace_back(static_cast<std::string>(kSensorTp1l));
-
-    // CPU core 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
-    // CPU core 2
-    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
-    // CPU core 3
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
-    // CPU core 4
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0n));
-    // CPU core 5
-    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
-    // CPU core 6
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
-    // CPU core 7
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
-    // CPU core 8
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0r));
-  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
-    // CPU performance core 1 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp01));
-    // CPU performance core 2 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp05));
-    // CPU performance core 3 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0D));
-    // CPU performance core 4 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0H));
-    // CPU performance core 5 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0L));
-    // CPU performance core 6 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0P));
-    // CPU performance core 7 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0X));
-    // CPU performance core 8 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0b));
-    // CPU efficient core 1 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp09));
-    // CPU efficient core 2 temperature
-    sensors.emplace_back(static_cast<std::string>(kSensorTp0T));
-
-    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0a));
-    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0b));
-    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0x));
-    aux_sensors.emplace_back(static_cast<std::string>(kSensorTc0z));
-  } else {
+  if (sensors.empty()) {
     // not supported
     return temp;
   }
 
   temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
-  if (temp > std::numeric_limits<double>::epsilon()) {
-    if (IsValidTemperature(temp, valid_temperature_limits)) {
-      StoreValidTemperature(temp, cpu_file_);
-    }
-    return temp;
-  }
-
-  temp = CalculateAverageTemperature(aux_sensors, valid_temperature_limits);
-  if (IsValidTemperature(temp, valid_temperature_limits)) {
+  if (temp > std::numeric_limits<double>::epsilon() && IsValidTemperature(temp, valid_temperature_limits)) {
     StoreValidTemperature(temp, cpu_file_);
   }
 #endif
@@ -559,7 +585,7 @@ double SmcTemp::GetCpuTemp() {
   return temp;
 }
 
-double SmcTemp::GetGpuTemp() {
+double smctemp::SmcTemp::GetGpuTemp() {
   double temp = 0.0;
 #if defined(ARCH_TYPE_X86_64)
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
@@ -576,34 +602,17 @@ double SmcTemp::GetGpuTemp() {
 #elif defined(ARCH_TYPE_ARM64)
   std::vector<std::string> sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
-  const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0P));  // GPU 2
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 3
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 4
-  } else if (cpumodel.find("m3") != std::string::npos) {  // Apple M3
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0P));  // GPU 2
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 3
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0b));  // GPU 4
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 5
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0v));  // GPU 6
-  } else if (cpumodel.find("m2") != std::string::npos) {  // Apple M2
-    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L369-L370
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0f));  // GPU 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 2
-  } else if (cpumodel.find("m1") != std::string::npos) {  // Apple M1
-    // ref: https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift#L354-L357
-    sensors.emplace_back(static_cast<std::string>(kSensorTg05));  // GPU 1
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 2
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0L));  // GPU 3
-    sensors.emplace_back(static_cast<std::string>(kSensorTg0T));  // GPU 4
-    // ref: runtime detected on a M1 mac mini
-    sensors.emplace_back(static_cast<std::string>(kSensorTg1b));  // GPU 5
-    sensors.emplace_back(static_cast<std::string>(kSensorTg4b));  // GPU 6
-  } else {
-    // not supported
+  
+  // Get sensor pairs
+  auto labeled_sensors = GetGpuCoreSensors();
+  
+  // Extract just the sensor keys for the calculation
+  for (const auto& sensor_pair : labeled_sensors) {
+    sensors.emplace_back(sensor_pair.second);
+  }
+  
+  // If no sensors found, this chip is not supported
+  if (sensors.empty()) {
     return temp;
   }
   temp = CalculateAverageTemperature(sensors, valid_temperature_limits);
@@ -614,7 +623,7 @@ double SmcTemp::GetGpuTemp() {
   return temp;
 }
 
-double SmcTemp::GetLastValidCpuTemp() {
+double smctemp::SmcTemp::GetLastValidCpuTemp() {
   std::string file_path = storage_path_ + cpu_file_;
   std::ifstream file(file_path);
   if (!file.is_open()) {
@@ -631,7 +640,7 @@ double SmcTemp::GetLastValidCpuTemp() {
   return value;
 }
 
-double SmcTemp::GetLastValidGpuTemp() {
+double smctemp::SmcTemp::GetLastValidGpuTemp() {
   std::string file_path = storage_path_ + gpu_file_;
   std::ifstream file(file_path);
   if (!file.is_open()) {
@@ -647,5 +656,74 @@ double SmcTemp::GetLastValidGpuTemp() {
 
   return value;
 }
+
+std::vector<std::pair<std::string, double>> smctemp::SmcTemp::GetIndividualCpuTemps() {
+  std::vector<std::pair<std::string, double>> temps;
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
+
+#if defined(ARCH_TYPE_X86_64)
+  // For x86_64 processors, try each sensor individually
+  double temp = smc_accessor_.ReadValue(kSensorTC0D);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TC0D"), temp);
+  }
+  
+  temp = smc_accessor_.ReadValue(kSensorTC0E);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TC0E"), temp);
+  }
+  
+  temp = smc_accessor_.ReadValue(kSensorTC0F);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TC0F"), temp);
+  }
+  
+  temp = smc_accessor_.ReadValue(kSensorTC0P);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TC0P"), temp);
+  }
+#elif defined(ARCH_TYPE_ARM64)
+  // Get the labeled sensors
+  auto labeled_sensors = GetCpuCoreSensors();
+
+  // Read temperatures from labeled sensors
+  for (const auto& sensor : labeled_sensors) {
+    double temp = smc_accessor_.ReadValue(sensor.second.c_str());
+    if (IsValidTemperature(temp, valid_temperature_limits)) {
+      temps.emplace_back(sensor.first, temp);
+    }
+  }
+#endif
+
+  return temps;
 }
 
+std::vector<std::pair<std::string, double>> smctemp::SmcTemp::GetIndividualGpuTemps() {
+  std::vector<std::pair<std::string, double>> temps;
+  const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
+  
+#if defined(ARCH_TYPE_X86_64)
+  double temp = smc_accessor_.ReadValue(kSensorTG0D);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TG0D"), temp);
+  }
+  
+  temp = smc_accessor_.ReadValue(kSensorTPCD);
+  if (IsValidTemperature(temp, valid_temperature_limits)) {
+    temps.emplace_back(std::string("TPCD"), temp);
+  }
+#elif defined(ARCH_TYPE_ARM64)
+  // Get sensor mapping
+  auto labeled_sensors = GetGpuCoreSensors();
+
+  for (const auto& sensor : labeled_sensors) {
+    double temp = smc_accessor_.ReadValue(sensor.second.c_str());
+    if (IsValidTemperature(temp, valid_temperature_limits)) {
+      temps.emplace_back(sensor.first, temp);
+    }
+  }
+#endif
+
+  return temps;
+}
+}
