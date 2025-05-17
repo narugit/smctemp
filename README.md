@@ -12,12 +12,18 @@ It works on following macs.
 I took the code from [hholtmann/smcFanControl/smc-command](https://github.com/hholtmann/smcFanControl/tree/ad374ffb1dd088a7676719e53dbd2886f8fafdff/smc-command) and modified it to specialize in temperature acquisition.
 Some of the sensor values were obtained from the [exelban/stats](https://github.com/exelban/stats) project.
 
-## How to Use
-```console
-$ git clone https://github.com/narugit/smctemp
-$ cd smctemp
-$ sudo make install
-$ smctemp -c
+## Installation
+### Brew (Recommended)
+```bash
+brew tap narugit/tap
+brew install narugit/tap/smctemp
+```
+
+### Manual
+```bash
+git clone https://github.com/narugit/smctemp
+cd smctemp
+sudo make install
 ```
 
 ## Usage 
