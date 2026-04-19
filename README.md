@@ -2,6 +2,7 @@
 Print CPU and GPU temperatures on macOS.
 
 It works on following macs.
+- arm64 (M5 mac)
 - arm64 (M4 mac)
 - arm64 (M3 mac)
 - arm64 (M2 mac)
