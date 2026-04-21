@@ -12,10 +12,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v6
 
-      - name: Show toolchain info
+      - name: Show build environment
         run: |
-          uname -m
           sw_vers
+          uname -m
+          sysctl -n machdep.cpu.brand_string
           g++ --version
 
       - name: Build binary
