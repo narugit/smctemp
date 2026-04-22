@@ -600,7 +600,7 @@ double SmcTemp::GetGpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
   const std::string cpumodel = getCPUModel();
   if (cpumodel.find("m5") != std::string::npos) {  // Apple M5
-    // ref: https://github.com/exelban/stats/blob/HEAD/Modules/Sensors/values.swift (Platform.m5Gen)
+    // ref: https://github.com/exelban/stats/blob/ab28d72/Modules/Sensors/values.swift#L489-L496
     sensors.emplace_back(static_cast<std::string>(kSensorTg0U));  // GPU 1
     sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 2
     sensors.emplace_back(static_cast<std::string>(kSensorTg0d));  // GPU 3
