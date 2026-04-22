@@ -466,7 +466,7 @@ double SmcTemp::GetCpuTemp() {
 
   const std::string cpumodel = getCPUModel();
   if (cpumodel.find("m5") != std::string::npos) {  // Apple M5
-    // ref: https://github.com/exelban/stats/blob/HEAD/Modules/Sensors/values.swift (Platform.m5Gen)
+    // ref: https://github.com/exelban/stats/blob/ab28d72/Modules/Sensors/values.swift#L469-L487
     // CPU super cores
     sensors.emplace_back(static_cast<std::string>(kSensorTp00));
     sensors.emplace_back(static_cast<std::string>(kSensorTp04));
