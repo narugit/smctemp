@@ -36,7 +36,7 @@
 
 #include "smctemp_string.h"
 
-#if defined(ARCH_TYPE_ARM64)
+#if defined(ARCH_TYPE_ARM64) || defined(__arm64__)
 #include <sys/sysctl.h>
 #include <algorithm>
 #include <array>
@@ -435,7 +435,7 @@ double SmcTemp::CalculateAverageTemperature(const std::vector<std::string>& sens
 
 double SmcTemp::GetCpuTemp() {
   double temp = 0.0;
-#if defined(ARCH_TYPE_X86_64)
+#if defined(ARCH_TYPE_X86_64) || defined(__x86_64__)
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   // The reason why I prefer CPU die temperature to CPU proximity temperature:
   // https://github.com/narugit/smctemp/issues/2
@@ -459,7 +459,7 @@ double SmcTemp::GetCpuTemp() {
     StoreValidTemperature(temp, cpu_file_);
     return temp;
   }
-#elif defined(ARCH_TYPE_ARM64)
+#elif defined(ARCH_TYPE_ARM64) || defined(__arm64__)
   std::vector<std::string> sensors;
   std::vector<std::string> aux_sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
@@ -583,7 +583,7 @@ double SmcTemp::GetCpuTemp() {
 
 double SmcTemp::GetGpuTemp() {
   double temp = 0.0;
-#if defined(ARCH_TYPE_X86_64)
+#if defined(ARCH_TYPE_X86_64) || defined(__x86_64__)
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{0, 110};
   temp = smc_accessor_.ReadValue(kSensorTG0D);
   if (IsValidTemperature(temp, valid_temperature_limits)) {
@@ -595,7 +595,7 @@ double SmcTemp::GetGpuTemp() {
     StoreValidTemperature(temp, gpu_file_);
     return temp;
   }
-#elif defined(ARCH_TYPE_ARM64)
+#elif defined(ARCH_TYPE_ARM64) || defined(__arm64__)
   std::vector<std::string> sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
   const std::string cpumodel = getCPUModel();

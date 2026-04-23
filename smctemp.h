@@ -47,7 +47,7 @@ constexpr int kOpReadGpuTemp = 3;
 // List of key and name: 
 // - https://github.com/exelban/stats/blob/6b88eb1f60a0eb5b1a7b51b54f044bf637fd785b/Modules/Sensors/values.swift
 // - https://github.com/acidanthera/VirtualSMC/blob/632fec680d996a5dd015afd9acf0ba40f75e69e2/Docs/SMCSensorKeys.txt
-#if defined(ARCH_TYPE_X86_64)
+#if defined(ARCH_TYPE_X86_64) || defined(__x86_64__)
 // CPU
 constexpr UInt32Char_t kSensorTC0D = "TC0D";  // CPU die temperature
 constexpr UInt32Char_t kSensorTC0E = "TC0E";  // CPU PECI die filtered temperature
@@ -56,7 +56,7 @@ constexpr UInt32Char_t kSensorTC0P = "TC0P";  // CPU proximity temperature
 // GPU
 constexpr UInt32Char_t kSensorTG0D = "TG0D";  // PCH Die Temp
 constexpr UInt32Char_t kSensorTPCD = "TPCD";  // PCH Die Temp (digital)
-#elif defined(ARCH_TYPE_ARM64)
+#elif defined(ARCH_TYPE_ARM64) || defined(__arm64__)
 // CPU
 constexpr UInt32Char_t kSensorTc0a = "Tc0a";
 constexpr UInt32Char_t kSensorTc0b = "Tc0b";
