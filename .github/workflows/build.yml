@@ -1,0 +1,32 @@
+name: Build
+on: [pull_request]
+jobs:
+  build:
+    name: runner / build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-26]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Show build environment
+        run: |
+          sw_vers
+          uname -m
+          sysctl -n machdep.cpu.brand_string
+          g++ --version
+
+      - name: Build binary
+        run: make
+
+      - name: Build static library
+        run: make staticlib
+
+      - name: Verify artifacts
+        run: |
+          file smctemp
+          file libsmctemp.a
+          ./smctemp -h || true

@@ -465,7 +465,29 @@ double SmcTemp::GetCpuTemp() {
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
 
   const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+  if (cpumodel.find("m5") != std::string::npos) {  // Apple M5
+    // ref: https://github.com/exelban/stats/blob/ab28d72/Modules/Sensors/values.swift#L469-L487
+    // CPU super cores
+    sensors.emplace_back(static_cast<std::string>(kSensorTp00));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp04));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp08));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0C));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0G));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0K));
+    // CPU performance cores
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0O));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0R));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0U));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0X));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0a));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0d));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0g));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0j));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0m));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0p));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0u));
+    sensors.emplace_back(static_cast<std::string>(kSensorTp0y));
+  } else if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
     sensors.emplace_back(static_cast<std::string>(kSensorTp01));
     sensors.emplace_back(static_cast<std::string>(kSensorTp09));
     sensors.emplace_back(static_cast<std::string>(kSensorTp0f));
@@ -577,7 +599,17 @@ double SmcTemp::GetGpuTemp() {
   std::vector<std::string> sensors;
   const std::pair<unsigned int, unsigned int> valid_temperature_limits{10, 120};
   const std::string cpumodel = getCPUModel();
-  if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
+  if (cpumodel.find("m5") != std::string::npos) {  // Apple M5
+    // ref: https://github.com/exelban/stats/blob/ab28d72/Modules/Sensors/values.swift#L489-L496
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0U));  // GPU 1
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 2
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0d));  // GPU 3
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0g));  // GPU 4
+    sensors.emplace_back(static_cast<std::string>(kSensorTg0j));  // GPU 5
+    sensors.emplace_back(static_cast<std::string>(kSensorTg1Y));  // GPU 6
+    sensors.emplace_back(static_cast<std::string>(kSensorTg1c));  // GPU 7
+    sensors.emplace_back(static_cast<std::string>(kSensorTg1g));  // GPU 8
+  } else if (cpumodel.find("m4") != std::string::npos) {  // Apple M4
     sensors.emplace_back(static_cast<std::string>(kSensorTg0D));  // GPU 1
     sensors.emplace_back(static_cast<std::string>(kSensorTg0P));  // GPU 2
     sensors.emplace_back(static_cast<std::string>(kSensorTg0X));  // GPU 3
